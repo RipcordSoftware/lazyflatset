@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+# ignore NetBeans related stuff
+/test/*/dist/
+/test/*/build/
+**/nbproject/private/
+.dep.inc
