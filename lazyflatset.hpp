@@ -125,26 +125,29 @@ private:
     void flush() const {
         if (unsorted_.size() > 0) {        
             sort(unsorted_);
-
-            // TODO: optimize the range insert            
-            auto start = unsorted_.cbegin(), sourceIter = start;
-            auto targetIter1 = upper_bound(coll_, *sourceIter++);            
-            for (; sourceIter != unsorted_.cend(); ++sourceIter) {
-                auto targetIter2 = upper_bound(coll_, *sourceIter);
-                if (targetIter1 != targetIter2) {
-                    coll_.insert(targetIter1, start, sourceIter);
-                    start = sourceIter;
-                    targetIter1 = targetIter2;
-                }
-            }
-
-            if (start != sourceIter) {
-                coll_.insert(targetIter1, start, sourceIter);
-            }
-
+            merge(unsorted_, coll_);
             unsorted_.clear();
         }
-    }   
+    }
+
+    // TODO: optimize the range insert
+    // TODO: review iterator invalidation
+    void merge(base_collection& source, base_collection& target) const {
+        auto sourceStart = source.cbegin(), sourceIter = sourceStart;
+        auto targetStart = upper_bound(target, *sourceIter++);            
+        for (; sourceIter != source.cend(); ++sourceIter) {
+            auto targetIter = upper_bound(target, *sourceIter);
+            if (targetStart != targetIter) {
+                target.insert(targetStart, sourceStart, sourceIter);
+                sourceStart = sourceIter;
+                targetStart = targetIter;
+            }
+        }
+
+        if (sourceStart != sourceIter) {
+            target.insert(targetStart, sourceStart, sourceIter);
+        }
+    }
     
     const unsigned maxUnsortedEntries_;
     
