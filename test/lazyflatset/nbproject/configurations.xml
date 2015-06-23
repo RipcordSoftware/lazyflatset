@@ -39,12 +39,6 @@
         <ccTool>
           <standard>8</standard>
         </ccTool>
-        <linkerTool>
-          <linkerLibItems>
-            <linkerLibLibItem>boost_chrono</linkerLibLibItem>
-            <linkerLibLibItem>boost_system</linkerLibLibItem>
-          </linkerLibItems>
-        </linkerTool>
       </compileType>
       <item path="../../lazyflatset.hpp" ex="false" tool="3" flavor2="0">
       </item>
@@ -71,12 +65,6 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
-        <linkerTool>
-          <linkerLibItems>
-            <linkerLibLibItem>boost_chrono</linkerLibLibItem>
-            <linkerLibLibItem>boost_system</linkerLibLibItem>
-          </linkerLibItems>
-        </linkerTool>
       </compileType>
       <item path="../../lazyflatset.hpp" ex="false" tool="3" flavor2="0">
       </item>
