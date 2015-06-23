@@ -37,6 +37,7 @@ public:
     using base_collection = typename std::vector<Key, Alloc>;
     using size_type = typename base_collection::size_type;
     using iterator = typename base_collection::iterator;
+    using const_iterator = typename base_collection::const_iterator;
     using value_type = Key;
     using reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, value_type&>::type;
     using const_reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, const value_type&>::type;
@@ -141,6 +142,21 @@ public:
     const_reference operator[](size_type n) const {
         flush();
         return coll_[n];
+    }
+    
+    const_iterator cbegin() const {
+        flush();
+        return coll_.cbegin();
+    }
+    
+    const_iterator cend() const {
+        flush();
+        return coll_.cend();
+    }    
+    
+    const value_type* data() const {
+        flush();
+        return coll_.data();
     }
     
 private:
