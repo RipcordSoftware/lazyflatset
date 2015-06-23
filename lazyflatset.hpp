@@ -10,40 +10,42 @@ namespace rs {
 template <class Key, class Less = std::less<Key>, class Equal = std::equal_to<Key>, class Alloc = std::allocator<Key>>
 class LazyFlatSet {
 public:
-    using size_type = typename std::vector<Key>::size_type;
+    using base_collection = typename std::vector<Key, Alloc>;
+    using size_type = typename base_collection::size_type;
+    using iterator = typename base_collection::iterator;
     using value_type = Key;
     using reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, value_type&>::type;
     using const_reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, const value_type&>::type;
     
     LazyFlatSet(unsigned maxUnsortedEntries = 32) : maxUnsortedEntries_(maxUnsortedEntries) {
-        tempColl_.reserve(maxUnsortedEntries);
+        unsorted_.reserve(maxUnsortedEntries);
     }
     
     void insert(const value_type& k) {
-        auto iter = std::lower_bound(coll_.begin(), coll_.end(), k, Less{});
-        if (iter != coll_.end() && Equal{}(*iter, k)) {
+        auto iter = lower_bound_equals(coll_, k);
+        if (iter != coll_.end()) {
             *iter = k;
         } else {
-            iter = std::search_n(tempColl_.begin(), tempColl_.end(), 1, k, Equal{});
-            if (iter != tempColl_.end()) {
+            iter = search_unsorted(unsorted_, k);
+            if (iter != unsorted_.end()) {
                 *iter = k;
             } else {            
-                if (tempColl_.size() == maxUnsortedEntries_) {
+                if (unsorted_.size() == maxUnsortedEntries_) {
                     flush();
                 }
 
-                tempColl_.push_back(k);
+                unsorted_.push_back(k);
             }
         }
     }
     
     bool empty() const {
-        return coll_.empty() && tempColl_.empty();
+        return coll_.empty() && unsorted_.empty();
     }
     
     void clear() {
         coll_.clear();
-        tempColl_.clear();
+        unsorted_.clear();
     }
     
     void reserve(size_type n) {
@@ -51,18 +53,18 @@ public:
     }
     
     size_type size() const {
-        return coll_.size() + tempColl_.size();
+        return coll_.size() + unsorted_.size();
     }
     
     size_type count(const value_type& k) const {
         size_type found = 0;
         
-        auto iter = std::lower_bound(coll_.begin(), coll_.end(), k, Less{});
-        if (iter != coll_.end() && Equal{}(*iter, k)) {
+        auto iter = lower_bound_equals(coll_, k);
+        if (iter != coll_.end()) {
             found = 1;
         } else {
-            iter = std::search_n(tempColl_.begin(), tempColl_.end(), 1, k, Equal{});
-            if (iter != tempColl_.end()) {
+            iter = search_unsorted(unsorted_, k);
+            if (iter != unsorted_.end()) {
                 found = 1;
             }
         }
@@ -73,13 +75,13 @@ public:
     bool find(const value_type& k, value_type& v) {
         auto found = false;
         
-        auto iter = std::lower_bound(coll_.begin(), coll_.end(), k, Less{});
-        if (iter != coll_.end() && Equal{}(*iter, k)) {
+        auto iter = lower_bound_equals(coll_, k);
+        if (iter != coll_.end()) {
             v = *iter;
             found = true;
         } else {
-            iter = std::search_n(tempColl_.begin(), tempColl_.end(), 1, k, Equal{});
-            if (iter != tempColl_.end()) {
+            iter = search_unsorted(unsorted_, k);
+            if (iter != unsorted_.end()) {
                 v = *iter;
                 found = true;
             }
@@ -94,15 +96,41 @@ public:
     }
     
 private:
+    void sort(base_collection& coll) const {
+        std::sort(coll.begin(), coll.end(), Less{});
+    }
+    
+    iterator lower_bound(base_collection& coll, const value_type& k) const {
+        return std::lower_bound(coll.begin(), coll.end(), k, Less{});
+    }
+    
+    iterator lower_bound_equals(base_collection& coll, const value_type& k) const {
+        auto iter = lower_bound(coll, k);
+        return iter != coll.end() && Equal{}(*iter, k) ? iter : coll.end();
+    }
+    
+    iterator upper_bound(base_collection& coll, const value_type& k) const {
+        return std::upper_bound(coll.begin(), coll.end(), k, Less{});
+    }
+    
+    iterator upper_bound_equals(base_collection& coll, const value_type& k) const {
+        auto iter = upper_bound(coll, k);
+        return iter != coll.end() && Equal{}(*iter, k) ? iter : coll.end();
+    }
+    
+    iterator search_unsorted(base_collection& coll, const value_type& k) const {
+        return std::search_n(coll.begin(), coll.end(), 1, k, Equal{});
+    }
+    
     void flush() const {
-        if (tempColl_.size() > 0) {        
-            std::sort(tempColl_.begin(), tempColl_.end(), Less{});
+        if (unsorted_.size() > 0) {        
+            sort(unsorted_);
 
             // TODO: optimize the range insert            
-            auto start = tempColl_.cbegin(), sourceIter = start;
-            auto targetIter1 = std::upper_bound(coll_.cbegin(), coll_.cend(), *sourceIter++, Less{});            
-            for (; sourceIter != tempColl_.cend(); ++sourceIter) {
-                auto targetIter2 = std::upper_bound(coll_.cbegin(), coll_.cend(), *sourceIter, Less{});
+            auto start = unsorted_.cbegin(), sourceIter = start;
+            auto targetIter1 = upper_bound(coll_, *sourceIter++);            
+            for (; sourceIter != unsorted_.cend(); ++sourceIter) {
+                auto targetIter2 = upper_bound(coll_, *sourceIter);
                 if (targetIter1 != targetIter2) {
                     coll_.insert(targetIter1, start, sourceIter);
                     start = sourceIter;
@@ -114,14 +142,14 @@ private:
                 coll_.insert(targetIter1, start, sourceIter);
             }
 
-            tempColl_.clear();
+            unsorted_.clear();
         }
     }   
     
     const unsigned maxUnsortedEntries_;
     
-    mutable std::vector<Key, Alloc> coll_;
-    mutable std::vector<Key, Alloc> tempColl_;
+    mutable base_collection coll_;
+    mutable base_collection unsorted_;
 };
     
 }
