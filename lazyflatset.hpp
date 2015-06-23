@@ -17,7 +17,7 @@ public:
     using reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, value_type&>::type;
     using const_reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, const value_type&>::type;
     
-    LazyFlatSet(unsigned maxUnsortedEntries = 32) : maxUnsortedEntries_(maxUnsortedEntries) {
+    LazyFlatSet(unsigned maxUnsortedEntries = 32) : maxUnsortedEntries_(maxUnsortedEntries), maxNurseryEntries_(maxUnsortedEntries * 256) {
         unsorted_.reserve(maxUnsortedEntries);
     }
     
@@ -26,25 +26,31 @@ public:
         if (iter != coll_.end()) {
             *iter = k;
         } else {
-            iter = search_unsorted(unsorted_, k);
-            if (iter != unsorted_.end()) {
+            iter = lower_bound_equals(nursery_, k);
+            if (iter != nursery_.end()) {
                 *iter = k;
             } else {            
-                if (unsorted_.size() == maxUnsortedEntries_) {
-                    flush();
-                }
+                iter = search_unsorted(unsorted_, k);
+                if (iter != unsorted_.end()) {
+                    *iter = k;
+                } else {
+                    if (unsorted_.size() == maxUnsortedEntries_) {
+                        flushUnsorted();
+                    }
 
-                unsorted_.push_back(k);
+                    unsorted_.push_back(k);
+                }
             }
         }
     }
     
     bool empty() const {
-        return coll_.empty() && unsorted_.empty();
+        return coll_.empty() && nursery_.empty() && unsorted_.empty();
     }
     
     void clear() {
         coll_.clear();
+        nursery_.clear();
         unsorted_.clear();
     }
     
@@ -53,7 +59,13 @@ public:
     }
     
     size_type size() const {
-        return coll_.size() + unsorted_.size();
+        return coll_.size() + nursery_.size() + unsorted_.size();
+    }
+
+    void shrink_to_fit() {
+        flush();
+        nursery_.shrink_to_fit();
+        coll_.shrink_to_fit();
     }
     
     size_type count(const value_type& k) const {
@@ -63,9 +75,14 @@ public:
         if (iter != coll_.end()) {
             found = 1;
         } else {
-            iter = search_unsorted(unsorted_, k);
-            if (iter != unsorted_.end()) {
+            iter = lower_bound_equals(nursery_, k);
+            if (iter != nursery_.end()) {
                 found = 1;
+            } else {
+                iter = search_unsorted(unsorted_, k);
+                if (iter != unsorted_.end()) {
+                    found = 1;
+                }
             }
         }
         
@@ -80,10 +97,16 @@ public:
             v = *iter;
             found = true;
         } else {
-            iter = search_unsorted(unsorted_, k);
-            if (iter != unsorted_.end()) {
+            iter = lower_bound_equals(nursery_, k);
+            if (iter != nursery_.end()) {
                 v = *iter;
                 found = true;
+            } else {
+                iter = search_unsorted(unsorted_, k);
+                if (iter != unsorted_.end()) {
+                    v = *iter;
+                    found = true;
+                }
             }
         }
         
@@ -123,10 +146,27 @@ private:
     }
     
     void flush() const {
-        if (unsorted_.size() > 0) {        
+        flushUnsorted();
+        flushNursery();
+    }
+
+    void flushUnsorted() const {
+        const auto unsortedSize = unsorted_.size();
+        if (unsortedSize > 0) {
+            if ((nursery_.size() + unsortedSize) >= maxNurseryEntries_) {
+                flushNursery();
+            }
+
             sort(unsorted_);
-            merge(unsorted_, coll_);
+            merge(unsorted_, nursery_);
             unsorted_.clear();
+        }
+    }
+    
+    void flushNursery() const {
+        if (nursery_.size() > 0) {        
+            merge(nursery_, coll_);
+            nursery_.clear();
         }
     }
 
@@ -150,8 +190,10 @@ private:
     }
     
     const unsigned maxUnsortedEntries_;
+    const unsigned maxNurseryEntries_;
     
     mutable base_collection coll_;
+    mutable base_collection nursery_;
     mutable base_collection unsorted_;
 };
     
