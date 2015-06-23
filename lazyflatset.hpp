@@ -20,13 +20,13 @@ public:
     }
     
     void insert(const value_type& k) {
-        auto found = std::lower_bound(coll_.begin(), coll_.end(), k, Less{});
-        if (found != coll_.end() && Equal{}(*found, k)) {
-            *found = k;
+        auto iter = std::lower_bound(coll_.begin(), coll_.end(), k, Less{});
+        if (iter != coll_.end() && Equal{}(*iter, k)) {
+            *iter = k;
         } else {
-            auto found = std::search_n(tempColl_.begin(), tempColl_.end(), 1, k, Equal{});
-            if (found != tempColl_.end()) {
-                *found = k;
+            iter = std::search_n(tempColl_.begin(), tempColl_.end(), 1, k, Equal{});
+            if (iter != tempColl_.end()) {
+                *iter = k;
             } else {            
                 if (tempColl_.size() == maxUnsortedEntries_) {
                     flush();
@@ -37,7 +37,7 @@ public:
         }
     }
     
-    bool empty() {
+    bool empty() const {
         return coll_.empty() && tempColl_.empty();
     }
     
@@ -50,8 +50,42 @@ public:
         coll_.reserve(n);
     }
     
-    size_type size() {
+    size_type size() const {
         return coll_.size() + tempColl_.size();
+    }
+    
+    size_type count(const value_type& k) const {
+        size_type found = 0;
+        
+        auto iter = std::lower_bound(coll_.begin(), coll_.end(), k, Less{});
+        if (iter != coll_.end() && Equal{}(*iter, k)) {
+            found = 1;
+        } else {
+            iter = std::search_n(tempColl_.begin(), tempColl_.end(), 1, k, Equal{});
+            if (iter != tempColl_.end()) {
+                found = 1;
+            }
+        }
+        
+         return found;
+    }
+    
+    bool find(const value_type& k, value_type& v) {
+        auto found = false;
+        
+        auto iter = std::lower_bound(coll_.begin(), coll_.end(), k, Less{});
+        if (iter != coll_.end() && Equal{}(*iter, k)) {
+            v = *iter;
+            found = true;
+        } else {
+            iter = std::search_n(tempColl_.begin(), tempColl_.end(), 1, k, Equal{});
+            if (iter != tempColl_.end()) {
+                v = *iter;
+                found = true;
+            }
+        }
+        
+         return found;
     }
     
     const_reference operator[](size_type n) const {
@@ -64,9 +98,9 @@ private:
         if (tempColl_.size() > 0) {        
             std::sort(tempColl_.begin(), tempColl_.end(), Less{});
 
-            // TODO: optimize the range insert
-            auto targetIter1 = coll_.cend();
+            // TODO: optimize the range insert            
             auto start = tempColl_.cbegin(), sourceIter = start;
+            auto targetIter1 = std::upper_bound(coll_.cbegin(), coll_.cend(), *sourceIter++, Less{});            
             for (; sourceIter != tempColl_.cend(); ++sourceIter) {
                 auto targetIter2 = std::upper_bound(coll_.cbegin(), coll_.cend(), *sourceIter, Less{});
                 if (targetIter1 != targetIter2) {
