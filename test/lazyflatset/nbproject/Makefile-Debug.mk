@@ -52,7 +52,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-lboost_chrono -lboost_system
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
