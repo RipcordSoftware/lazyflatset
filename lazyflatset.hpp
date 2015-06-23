@@ -41,7 +41,8 @@ public:
     using reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, value_type&>::type;
     using const_reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, const value_type&>::type;
     
-    LazyFlatSet(unsigned maxUnsortedEntries = 32) : maxUnsortedEntries_(maxUnsortedEntries), maxNurseryEntries_(maxUnsortedEntries * 256) {
+    LazyFlatSet(unsigned maxUnsortedEntries = 16, unsigned maxNurseryEntries = 1024) : 
+            maxUnsortedEntries_(maxUnsortedEntries), maxNurseryEntries_(maxNurseryEntries) {
         unsorted_.reserve(maxUnsortedEntries);
     }
     
@@ -195,21 +196,28 @@ private:
     }
 
     // TODO: optimize the range insert
-    // TODO: review iterator invalidation
     void merge(base_collection& source, base_collection& target) const {
-        auto sourceStart = source.cbegin(), sourceIter = sourceStart;
-        auto targetStart = upper_bound(target, *sourceIter++);            
-        for (; sourceIter != source.cend(); ++sourceIter) {
-            auto targetIter = upper_bound(target, *sourceIter);
-            if (targetStart != targetIter) {
-                target.insert(targetStart, sourceStart, sourceIter);
-                sourceStart = sourceIter;
-                targetStart = targetIter;
-            }
-        }
+        if (source.size() > 0) {
+            auto sourceStart = source.cbegin(), sourceIter = sourceStart;
+            auto targetStart = upper_bound(target, *sourceIter++);            
 
-        if (sourceStart != sourceIter) {
-            target.insert(targetStart, sourceStart, sourceIter);
+            if (targetStart != target.end()) {
+                for (; sourceIter != source.cend(); ++sourceIter) {
+                    auto targetIter = upper_bound(target, *sourceIter);
+                    if (targetStart != targetIter) {
+                        auto targetDelta = targetIter - target.begin();
+                        target.insert(targetStart, sourceStart, sourceIter);
+                        sourceStart = sourceIter;
+                        targetStart = target.begin() + targetDelta;
+                    }
+                }
+            } else {
+                sourceIter = source.end();
+            }
+
+            if (sourceStart != sourceIter) {
+                target.insert(targetStart, sourceStart, sourceIter);
+            }
         }
     }
     
