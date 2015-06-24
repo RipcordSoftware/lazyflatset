@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/RipcordSoftware/lazyflatset.svg)](https://travis-ci.org/RipcordSoftware/lazyflatset)
+
 # lazyflatset
 Like Boost's flat_set, but lazy. 
 
