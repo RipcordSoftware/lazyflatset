@@ -5,15 +5,17 @@
 
 int main() {
     
-    rs::LazyFlatSet<unsigned> set(32);
+    const unsigned max = 30 * 1000 * 1000;
+    
+    rs::LazyFlatSet<unsigned> set(16, 32 * 1024);
     
     auto start = std::chrono::steady_clock::now();
-    
-    const unsigned max = 2 * 1000 * 1000;
+
     for (unsigned i = 0; i < max; ++i) {
-        set.insert(max - i - 1);        
+        set.insert(max - i - 1);
+        //set.insert(i);
         
-        if ((i & 0x7ff) == 0) {
+        if ((i & 0x7fff) == 0) {
             std::cout << i << std::endl;
         }
     }

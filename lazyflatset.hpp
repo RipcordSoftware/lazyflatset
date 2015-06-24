@@ -246,6 +246,10 @@ private:
                     auto targetIter = upper_bound(target, *sourceIter);
                     if (targetStart != targetIter) {
                         auto targetDelta = targetIter - target.begin();
+                        if (targetIter > targetStart) {
+                            targetDelta += sourceIter - sourceStart;
+                        }
+                        
                         target.insert(targetStart, sourceStart, sourceIter);
                         sourceStart = sourceIter;
                         targetStart = target.begin() + targetDelta;
