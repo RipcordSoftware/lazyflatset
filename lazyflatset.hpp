@@ -112,7 +112,7 @@ public:
             }
         }
         
-         return found;
+        return found;
     }
     
     bool find(const value_type& k, value_type& v) {
@@ -157,6 +157,30 @@ public:
     const value_type* data() const {
         flush();
         return coll_.data();
+    }
+    
+    size_type erase(const value_type& k) {
+        size_type count = 0;
+        
+        auto iter = lower_bound_equals(coll_, k);
+        if (iter != coll_.end()) {
+            coll_.erase(iter);
+            count = 1;
+        } else {
+            iter = lower_bound_equals(nursery_, k);
+            if (iter != nursery_.end()) {
+                nursery_.erase(iter);
+                count = 1;
+            } else {
+                iter = search_unsorted(unsorted_, k);
+                if (iter != unsorted_.end()) {
+                    unsorted_.erase(iter);
+                    count = 1;
+                }
+            }
+        }
+        
+        return count;
     }
     
 private:
