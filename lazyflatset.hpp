@@ -235,32 +235,16 @@ private:
         }
     }
 
-    // TODO: optimize the range insert
     void merge(base_collection& source, base_collection& target) const {
         if (source.size() > 0) {
-            auto sourceStart = source.cbegin(), sourceIter = sourceStart;
-            auto targetStart = upper_bound(target, *sourceIter++);            
-
-            if (targetStart != target.end()) {
-                for (; sourceIter != source.cend(); ++sourceIter) {
-                    auto targetIter = upper_bound(target, *sourceIter);
-                    if (targetStart != targetIter) {
-                        auto targetDelta = targetIter - target.begin();
-                        if (targetIter > targetStart) {
-                            targetDelta += sourceIter - sourceStart;
-                        }
-                        
-                        target.insert(targetStart, sourceStart, sourceIter);
-                        sourceStart = sourceIter;
-                        targetStart = target.begin() + targetDelta;
-                    }
-                }
+            Less less;
+            if (target.size() == 0 || less(target.back(), source.front())) {
+                target.insert(target.cend(), source.cbegin(), source.cend());
+            } else if (less(source.back(), target.front())) {
+                target.insert(target.cbegin(), source.cbegin(), source.cend());
             } else {
-                sourceIter = source.end();
-            }
-
-            if (sourceStart != sourceIter) {
-                target.insert(targetStart, sourceStart, sourceIter);
+                target.insert(target.cbegin(), source.cbegin(), source.cend());
+                std::inplace_merge(target.begin(), target.begin() + source.size(), target.end());
             }
         }
     }
