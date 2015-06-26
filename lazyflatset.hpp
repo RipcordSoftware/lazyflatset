@@ -239,11 +239,11 @@ private:
         if (source.size() > 0) {
             Less less;
             if (target.size() == 0 || less(target.back(), source.front())) {
-                target.insert(target.cend(), source.cbegin(), source.cend());
+                target.insert(target.end(), source.cbegin(), source.cend());
             } else if (less(source.back(), target.front())) {
-                target.insert(target.cbegin(), source.cbegin(), source.cend());
+                target.insert(target.begin(), source.cbegin(), source.cend());
             } else {
-                target.insert(target.cbegin(), source.cbegin(), source.cend());
+                target.insert(target.begin(), source.cbegin(), source.cend());
                 std::inplace_merge(target.begin(), target.begin() + source.size(), target.end());
             }
         }
