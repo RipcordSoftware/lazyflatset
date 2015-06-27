@@ -46,6 +46,7 @@
       <compileType>
         <ccTool>
           <standard>8</standard>
+          <commandLine>--coverage</commandLine>
         </ccTool>
       </compileType>
       <item path="../../lazyflatset.hpp" ex="false" tool="3" flavor2="0">

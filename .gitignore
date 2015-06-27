@@ -32,3 +32,7 @@
 /test/*/build/
 **/nbproject/private/
 .dep.inc
+
+# ignore the coverage output files
+coverage.info
+coverage/*
