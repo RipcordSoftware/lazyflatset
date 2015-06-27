@@ -303,3 +303,35 @@ void basic_operations::test12() {
     CPPUNIT_ASSERT_EQUAL(0ul, set.size());
     CPPUNIT_ASSERT(set.empty());
 }
+
+void basic_operations::test13() {
+    std::vector<unsigned> data;
+    for (unsigned i = 0; i < 10000; ++i) {
+        data.push_back(i);
+    }
+    
+    std::random_shuffle(data.begin(), data.end());
+    
+    rs::LazyFlatSet<unsigned> set;
+    for (unsigned i = 0; i < data.size(); ++i) {
+        auto k = data[i];
+        set.insert(k);
+        CPPUNIT_ASSERT_EQUAL(i + 1ul, set.size());
+        CPPUNIT_ASSERT_EQUAL(1ul, set.count(k));
+        
+        unsigned value = -1;
+        CPPUNIT_ASSERT(set.find(k, value));
+        CPPUNIT_ASSERT_EQUAL(k, value);
+    }   
+    
+    for (unsigned i = 0; i < data.size(); ++i) {
+        auto k = data[i];
+        set.insert(k);
+        CPPUNIT_ASSERT_EQUAL(data.size(), set.size());
+        CPPUNIT_ASSERT_EQUAL(1ul, set.count(k));
+        
+        unsigned value = -1;
+        CPPUNIT_ASSERT(set.find(k, value));
+        CPPUNIT_ASSERT_EQUAL(k, value);
+    }
+}

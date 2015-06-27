@@ -18,6 +18,7 @@ class basic_operations : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test10);
     CPPUNIT_TEST(test11);
     CPPUNIT_TEST(test12);
+    CPPUNIT_TEST(test13);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -40,6 +41,7 @@ private:
     void test10();
     void test11();
     void test12();
+    void test13();
 };
 
 #endif	/* BASIC_OPERATIONS_H */
