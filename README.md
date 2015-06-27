@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/RipcordSoftware/lazyflatset.svg)](https://travis-ci.org/RipcordSoftware/lazyflatset)
+[![Coverage Status](https://coveralls.io/repos/RipcordSoftware/lazyflatset/badge.svg)](https://coveralls.io/r/RipcordSoftware/lazyflatset)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
 
 # lazyflatset
