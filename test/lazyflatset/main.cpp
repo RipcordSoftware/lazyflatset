@@ -11,25 +11,25 @@
 #include "../../lazyflatset.hpp"
 
 using DataType = unsigned;
-using SourceIterator = std::vector<DataType>::const_iterator;
+using SourceIterator = std::vector<DataType>::iterator;
 
 using TestFunction = std::function<void(SourceIterator, SourceIterator)>;
 
 void vectorHeadInsert(SourceIterator begin, SourceIterator end) {
     std::vector<DataType> data;
-    data.insert(data.cbegin(), begin, end);
+    data.insert(data.begin(), begin, end);
 }
 
 void vectorTailInsert(SourceIterator begin, SourceIterator end) {
     std::vector<DataType> data;
-    data.insert(data.cend(), begin, end);
+    data.insert(data.end(), begin, end);
 }
 
 void vectorHeadPush(SourceIterator begin, SourceIterator end) {
     std::vector<DataType> data;
     
     for (auto iter = begin; iter != end; ++iter) {
-        data.insert(data.cbegin(), *iter);
+        data.insert(data.begin(), *iter);
     }
 }
 
@@ -61,7 +61,7 @@ void priorityQueuePush(SourceIterator begin, SourceIterator end) {
 
 void listTailInsert(SourceIterator begin, SourceIterator end) {
     std::list<DataType> data;
-    data.insert(data.cbegin(), begin, end);
+    data.insert(data.begin(), begin, end);
 }
 
 void lazyFlatSetInsert(SourceIterator begin, SourceIterator end) {
@@ -98,29 +98,29 @@ int main() {
     
     std::cout << R"("Ascending", )";
     
-    test(listTailInsert, data.cbegin(), data.cend());
-    test(vectorTailInsert, data.cbegin(), data.cend());
-    test(vectorTailPush, data.cbegin(), data.cend());
-    test(vectorHeadInsert, data.cbegin(), data.cend());
-    //test(vectorHeadPush, data.cbegin(), data.cend());
-    test(setInsert, data.cbegin(), data.cend());
-    test(unorderedSetInsert, data.cbegin(), data.cend());
-    test(priorityQueuePush, data.cbegin(), data.cend());
-    test(lazyFlatSetInsert, data.cbegin(), data.cend(), true);
+    test(listTailInsert, data.begin(), data.end());
+    test(vectorTailInsert, data.begin(), data.end());
+    test(vectorTailPush, data.begin(), data.end());
+    test(vectorHeadInsert, data.begin(), data.end());
+    //test(vectorHeadPush, data.begin(), data.end());
+    test(setInsert, data.begin(), data.end());
+    test(unorderedSetInsert, data.begin(), data.end());
+    test(priorityQueuePush, data.begin(), data.end());
+    test(lazyFlatSetInsert, data.begin(), data.end(), true);
     
     std::cout << R"("Descending", )";
     
     std::reverse(data.begin(), data.end());
     
-    test(listTailInsert, data.cbegin(), data.cend());
-    test(vectorTailInsert, data.cbegin(), data.cend());
-    test(vectorTailPush, data.cbegin(), data.cend());
-    test(vectorHeadInsert, data.cbegin(), data.cend());
-    //test(vectorHeadPush, data.cbegin(), data.cend());
-    test(setInsert, data.cbegin(), data.cend());
-    test(unorderedSetInsert, data.cbegin(), data.cend());
-    test(priorityQueuePush, data.cbegin(), data.cend());
-    test(lazyFlatSetInsert, data.cbegin(), data.cend(), true);
+    test(listTailInsert, data.begin(), data.end());
+    test(vectorTailInsert, data.begin(), data.end());
+    test(vectorTailPush, data.begin(), data.end());
+    test(vectorHeadInsert, data.begin(), data.end());
+    //test(vectorHeadPush, data.begin(), data.end());
+    test(setInsert, data.begin(), data.end());
+    test(unorderedSetInsert, data.begin(), data.end());
+    test(priorityQueuePush, data.begin(), data.end());
+    test(lazyFlatSetInsert, data.begin(), data.end(), true);
     
     std::cout << R"("Partial shuffle", )";
     
@@ -133,29 +133,29 @@ int main() {
         iter += blockSize;
     }        
     
-    test(listTailInsert, data.cbegin(), data.cend());
-    test(vectorTailInsert, data.cbegin(), data.cend());
-    test(vectorTailPush, data.cbegin(), data.cend());
-    test(vectorHeadInsert, data.cbegin(), data.cend());
-    //test(vectorHeadPush, data.cbegin(), data.cend());
-    test(setInsert, data.cbegin(), data.cend());
-    test(unorderedSetInsert, data.cbegin(), data.cend());
-    test(priorityQueuePush, data.cbegin(), data.cend());
-    test(lazyFlatSetInsert, data.cbegin(), data.cend(), true);
+    test(listTailInsert, data.begin(), data.end());
+    test(vectorTailInsert, data.begin(), data.end());
+    test(vectorTailPush, data.begin(), data.end());
+    test(vectorHeadInsert, data.begin(), data.end());
+    //test(vectorHeadPush, data.begin(), data.end());
+    test(setInsert, data.begin(), data.end());
+    test(unorderedSetInsert, data.begin(), data.end());
+    test(priorityQueuePush, data.begin(), data.end());
+    test(lazyFlatSetInsert, data.begin(), data.end(), true);
     
     std::cout << R"("Full shuffle", )";
     
     std::random_shuffle(data.begin(), data.end());
 
-    test(listTailInsert, data.cbegin(), data.cend());
-    test(vectorTailInsert, data.cbegin(), data.cend());
-    test(vectorTailPush, data.cbegin(), data.cend());
-    test(vectorHeadInsert, data.cbegin(), data.cend());
-    //test(vectorHeadPush, data.cbegin(), data.cend());
-    test(setInsert, data.cbegin(), data.cend());
-    test(unorderedSetInsert, data.cbegin(), data.cend());
-    test(priorityQueuePush, data.cbegin(), data.cend());
-    test(lazyFlatSetInsert, data.cbegin(), data.cend(), true);
+    test(listTailInsert, data.begin(), data.end());
+    test(vectorTailInsert, data.begin(), data.end());
+    test(vectorTailPush, data.begin(), data.end());
+    test(vectorHeadInsert, data.begin(), data.end());
+    //test(vectorHeadPush, data.begin(), data.end());
+    test(setInsert, data.begin(), data.end());
+    test(unorderedSetInsert, data.begin(), data.end());
+    test(priorityQueuePush, data.begin(), data.end());
+    test(lazyFlatSetInsert, data.begin(), data.end(), true);
     
     return 0;
 }
