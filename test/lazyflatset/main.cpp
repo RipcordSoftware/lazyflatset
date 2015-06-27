@@ -1,36 +1,161 @@
 #include <iostream>
 #include <chrono>
+#include <functional>
+
+#include <vector>
+#include <set>
+#include <unordered_set>
+#include <list>
+#include <queue>
 
 #include "../../lazyflatset.hpp"
 
-int main() {
-    
-    const unsigned max = 30 * 1000 * 1000;
-    
-    rs::LazyFlatSet<unsigned> set(16, 32 * 1024);
-    
-    auto start = std::chrono::steady_clock::now();
+using DataType = unsigned;
+using SourceIterator = std::vector<DataType>::const_iterator;
 
-    for (unsigned i = 0; i < max; ++i) {
-        set.insert(max - i - 1);
-        //set.insert(i);
-        
-        if ((i & 0x7fff) == 0) {
-            std::cout << i << std::endl;
-        }
-    }
+using TestFunction = std::function<void(SourceIterator, SourceIterator)>;
+
+void vectorHeadInsert(SourceIterator begin, SourceIterator end) {
+    std::vector<DataType> data;
+    data.insert(data.cbegin(), begin, end);
+}
+
+void vectorTailInsert(SourceIterator begin, SourceIterator end) {
+    std::vector<DataType> data;
+    data.insert(data.cend(), begin, end);
+}
+
+void vectorHeadPush(SourceIterator begin, SourceIterator end) {
+    std::vector<DataType> data;
     
+    for (auto iter = begin; iter != end; ++iter) {
+        data.insert(data.cbegin(), *iter);
+    }
+}
+
+void vectorTailPush(SourceIterator begin, SourceIterator end) {
+    std::vector<DataType> data;
+    
+    for (auto iter = begin; iter != end; ++iter) {
+        data.push_back(*iter);
+    }
+}
+
+void setInsert(SourceIterator begin, SourceIterator end) {
+    std::set<DataType> data;
+    data.insert(begin, end);
+}
+
+void unorderedSetInsert(SourceIterator begin, SourceIterator end) {
+    std::unordered_set<DataType> data;
+    data.insert(begin, end);
+}
+
+void priorityQueuePush(SourceIterator begin, SourceIterator end) {
+    std::priority_queue <DataType> data;
+    
+    for (auto iter = begin; iter != end; ++iter) {
+        data.push(*iter);
+    }
+}
+
+void listTailInsert(SourceIterator begin, SourceIterator end) {
+    std::list<DataType> data;
+    data.insert(data.cbegin(), begin, end);
+}
+
+void lazyFlatSetInsert(SourceIterator begin, SourceIterator end) {
+    rs::LazyFlatSet<DataType> data(128, 32 * 1024);
+    
+    for (auto iter = begin; iter != end; ++iter) {
+        data.insert(*iter);
+    }
+}
+
+void test(TestFunction func, SourceIterator begin, SourceIterator end, bool eol = false) {
+    auto start = std::chrono::steady_clock::now();
+    func(begin, end);
     auto duration = std::chrono::steady_clock::now() - start;
     auto durationMS = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
     
-    std::cout << "Populate: " << durationMS.count() << "ms" << std::endl;
+    std::cout << durationMS.count();
     
-    std::cout << "Size: " << set.size() << std::endl;
-    std::cout << "[0] = " << set[0] << std::endl;
-    std::cout << "[1] = " << set[1] << std::endl;
-    std::cout << "[10] = " << set[10] << std::endl;
-    std::cout << "[1000] = " << set[1000] << std::endl;    
-
-    return 0;
+    if (eol) {
+        std::cout << std::endl;
+    } else {
+        std::cout << ", ";
+    }
 }
 
+int main() {
+    std::vector<DataType> data;
+    const unsigned max = 5 * 1000 * 1000;
+    for (unsigned i = 0; i < max; ++i) {
+        data.push_back(i);
+    }
+    
+    std::cout << R"("", "listTailInsert", "vectorTailInsert", "vectorTailPush", "vectorHeadInsert", "setInsert", "unorderedSetInsert", "priorityQueuePush", "lazyFlatSetInsert")" << std::endl;
+    
+    std::cout << R"("Ascending", )";
+    
+    test(listTailInsert, data.cbegin(), data.cend());
+    test(vectorTailInsert, data.cbegin(), data.cend());
+    test(vectorTailPush, data.cbegin(), data.cend());
+    test(vectorHeadInsert, data.cbegin(), data.cend());
+    //test(vectorHeadPush, data.cbegin(), data.cend());
+    test(setInsert, data.cbegin(), data.cend());
+    test(unorderedSetInsert, data.cbegin(), data.cend());
+    test(priorityQueuePush, data.cbegin(), data.cend());
+    test(lazyFlatSetInsert, data.cbegin(), data.cend(), true);
+    
+    std::cout << R"("Descending", )";
+    
+    std::reverse(data.begin(), data.end());
+    
+    test(listTailInsert, data.cbegin(), data.cend());
+    test(vectorTailInsert, data.cbegin(), data.cend());
+    test(vectorTailPush, data.cbegin(), data.cend());
+    test(vectorHeadInsert, data.cbegin(), data.cend());
+    //test(vectorHeadPush, data.cbegin(), data.cend());
+    test(setInsert, data.cbegin(), data.cend());
+    test(unorderedSetInsert, data.cbegin(), data.cend());
+    test(priorityQueuePush, data.cbegin(), data.cend());
+    test(lazyFlatSetInsert, data.cbegin(), data.cend(), true);
+    
+    std::cout << R"("Partial shuffle", )";
+    
+    const unsigned blocks = 10000;
+    const unsigned blockSize = max / blocks;
+    auto iter = data.begin();
+    for (unsigned i = 0; i < blocks; ++i) {
+        auto iterEnd = iter + blockSize;
+        std::random_shuffle(iter, iterEnd < data.end() ? iterEnd : data.end());
+        iter += blockSize;
+    }        
+    
+    test(listTailInsert, data.cbegin(), data.cend());
+    test(vectorTailInsert, data.cbegin(), data.cend());
+    test(vectorTailPush, data.cbegin(), data.cend());
+    test(vectorHeadInsert, data.cbegin(), data.cend());
+    //test(vectorHeadPush, data.cbegin(), data.cend());
+    test(setInsert, data.cbegin(), data.cend());
+    test(unorderedSetInsert, data.cbegin(), data.cend());
+    test(priorityQueuePush, data.cbegin(), data.cend());
+    test(lazyFlatSetInsert, data.cbegin(), data.cend(), true);
+    
+    std::cout << R"("Full shuffle", )";
+    
+    std::random_shuffle(data.begin(), data.end());
+
+    test(listTailInsert, data.cbegin(), data.cend());
+    test(vectorTailInsert, data.cbegin(), data.cend());
+    test(vectorTailPush, data.cbegin(), data.cend());
+    test(vectorHeadInsert, data.cbegin(), data.cend());
+    //test(vectorHeadPush, data.cbegin(), data.cend());
+    test(setInsert, data.cbegin(), data.cend());
+    test(unorderedSetInsert, data.cbegin(), data.cend());
+    test(priorityQueuePush, data.cbegin(), data.cend());
+    test(lazyFlatSetInsert, data.cbegin(), data.cend(), true);
+    
+    return 0;
+}
