@@ -28,10 +28,14 @@
 #include <vector>
 #include <algorithm>
 #include <type_traits>
+#include <functional>
 
 namespace rs {
     
-template <class Key, class Less = std::less<Key>, class Equal = std::equal_to<Key>, class Alloc = std::allocator<Key>>
+template <class Key, class Less>
+struct LazyFlatSetQuickSort;
+
+template <class Key, class Less = std::less<Key>, class Equal = std::equal_to<Key>, class Sort = LazyFlatSetQuickSort<Key, Less>, class Alloc = std::allocator<Key>>
 class LazyFlatSet {
 public:
     using base_collection = typename std::vector<Key, Alloc>;
@@ -185,7 +189,7 @@ public:
     
 private:
     void sort(base_collection& coll) const {
-        std::sort(coll.begin(), coll.end(), Less{});
+        Sort{}(coll.begin(), coll.end());
     }
     
     iterator lower_bound(base_collection& coll, const value_type& k) const {
@@ -256,7 +260,14 @@ private:
     mutable base_collection nursery_;
     mutable base_collection unsorted_;
 };
-    
+
+template <class Key, class Less>
+struct LazyFlatSetQuickSort {
+    void operator()(typename LazyFlatSet<Key>::iterator first, typename LazyFlatSet<Key>::iterator last) {
+        std::sort(first, last, Less{});
+    }
+};
+
 }
 
 #endif

@@ -5,6 +5,7 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>../../lazyflatset.hpp</itemPath>
+      <itemPath>../../externals/cpp-TimSort/timsort.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -26,6 +27,14 @@
         <itemPath>tests/basic_operations.cpp</itemPath>
         <itemPath>tests/basic_operations.h</itemPath>
         <itemPath>tests/basic_operations_runner.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f2"
+                     displayName="Test TimSort"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/test_timsort.cpp</itemPath>
+        <itemPath>tests/test_timsort.h</itemPath>
+        <itemPath>tests/test_timsort_runner.cpp</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -49,6 +58,11 @@
           <commandLine>--coverage</commandLine>
         </ccTool>
       </compileType>
+      <item path="../../externals/cpp-TimSort/timsort.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../lazyflatset.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles">
@@ -76,6 +90,20 @@
           </linkerLibItems>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f2</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/basic_operations.cpp" ex="false" tool="1" flavor2="0">
@@ -83,6 +111,12 @@
       <item path="tests/basic_operations.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="tests/basic_operations_runner.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/test_timsort.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/test_timsort.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/test_timsort_runner.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -106,6 +140,11 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="../../externals/cpp-TimSort/timsort.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../lazyflatset.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles">
@@ -133,6 +172,20 @@
           </linkerLibItems>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f2</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/basic_operations.cpp" ex="false" tool="1" flavor2="0">
@@ -140,6 +193,12 @@
       <item path="tests/basic_operations.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="tests/basic_operations_runner.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/test_timsort.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/test_timsort.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/test_timsort_runner.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>

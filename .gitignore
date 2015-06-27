@@ -36,3 +36,6 @@
 # ignore the coverage output files
 coverage.info
 coverage/*
+
+# ignore externals
+externals
