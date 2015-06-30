@@ -43,6 +43,6 @@ For insert and lookup tests we would always expect unordered_set to perform very
 
 The big advantage lazyflatset has is in handling the data once inserted. The data is held in contiguous memory which means it is as fast as std::vector to enumerate with no additional memory or CPU overhead to yield sorted output. 
 
-Since std::set is sparse the data is spread all over the memory space (or at least that used by `new`). 
+Since std::set is sparse the data is spread all over the memory space (or at least that used by `new`). Iterating over the set will incurr indirection costs and std::copy will not be able to take advantage of fast memory copy operations like `memcpy`.
 
 std::unordered_set is continguous however it isn't sorted and generally uses a lot more memory to maintain fast insert and lookup performance.
