@@ -335,3 +335,67 @@ void basic_operations::test13() {
         CPPUNIT_ASSERT_EQUAL(k, value);
     }
 }
+
+void basic_operations::test14() {
+    std::vector<unsigned> data;
+    for (unsigned i = 0; i < 10000; ++i) {
+        data.push_back(i);
+    }
+    
+    std::random_shuffle(data.begin(), data.end());
+    
+    rs::LazyFlatSet<unsigned> set;
+    for (unsigned i = 0; i < data.size(); ++i) {
+        auto k = data[i];
+        set.insert(k);
+    }   
+    
+    for (unsigned i = 0; i < data.size(); ++i) {
+        auto k = set[i];
+        CPPUNIT_ASSERT_EQUAL(i, k);
+    }
+}
+
+void basic_operations::test15() {
+    std::vector<unsigned> data;
+    for (unsigned i = 0; i < 10000; ++i) {
+        data.push_back(i);
+    }
+    
+    std::random_shuffle(data.begin(), data.end());
+    
+    rs::LazyFlatSet<unsigned> set;
+    for (unsigned i = 0; i < data.size(); ++i) {
+        auto k = data[i];
+        set.insert(k);
+    }   
+    
+    auto setData = set.data();
+    for (unsigned i = 0; i < data.size(); ++i) {
+        auto k = setData[i];
+        CPPUNIT_ASSERT_EQUAL(i, k);
+    }
+}
+
+void basic_operations::test16() {
+    std::vector<unsigned> data;
+    for (unsigned i = 0; i < 10000; ++i) {
+        data.push_back(i);
+    }
+    
+    std::random_shuffle(data.begin(), data.end());
+    
+    rs::LazyFlatSet<unsigned> set;
+    for (unsigned i = 0; i < data.size(); ++i) {
+        auto k = data[i];
+        set.insert(k);
+    }   
+    
+    auto iter = set.cbegin();
+    for (unsigned i = 0; i < data.size(); ++i) {
+        auto k = *iter++;
+        CPPUNIT_ASSERT_EQUAL(i, k);
+    }
+    
+    CPPUNIT_ASSERT(set.cend() == iter);
+}

@@ -233,7 +233,7 @@ private:
     }
     
     void flushNursery() const {
-        if (nursery_.size() > 0) {        
+        if (nursery_.size() > 0) {
             merge(nursery_, coll_);
             nursery_.clear();
         }
