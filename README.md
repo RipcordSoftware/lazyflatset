@@ -22,7 +22,7 @@ int main() {
 }
 ```
 
-We develop with Netbeans C++ IDE and GCC 4.9 on Debian. We expect it to work with any C++11 compiler including GCC 4.8 and clang 3.5.
+We expect lazyflatset to work with any C++11 compiler including GCC 4.8 and clang 3.4.
 
 ## Performance
 
