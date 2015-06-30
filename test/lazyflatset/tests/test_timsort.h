@@ -3,16 +3,6 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "../../../lazyflatset.hpp"
-#include "../../../externals/cpp-TimSort/timsort.hpp"
-
-template <class Key, class Less = std::less<Key>>
-struct LazyFlatSetTimsort {
-    void operator()(typename rs::LazyFlatSet<Key>::iterator first, typename rs::LazyFlatSet<Key>::iterator last) {
-        gfx::timsort(first, last, Less{});
-    }
-};
-
 class test_timsort : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_timsort);
 

@@ -1,5 +1,22 @@
 #include "test_timsort.h"
 
+#include "../../../lazyflatset.hpp"
+#include "../../../externals/cpp-TimSort/timsort.hpp"
+
+template <class Key, class Less = std::less<Key>>
+struct LazyFlatSetTimsort {
+    using key_type = Key;
+    using less_type = Less;
+    
+    void operator()(typename rs::LazyFlatSet<Key>::iterator first, typename rs::LazyFlatSet<Key>::iterator last) {
+        gfx::timsort(first, last, Less{});
+    }
+};
+
+using LazyFlatSetTimsortUnsigned = LazyFlatSetTimsort<unsigned>;
+
+using LazyFlatSetUnsigned = rs::LazyFlatSet<LazyFlatSetTimsortUnsigned::key_type, LazyFlatSetTimsortUnsigned::less_type, std::equal_to<LazyFlatSetTimsortUnsigned::key_type>, LazyFlatSetTimsortUnsigned>;
+
 CPPUNIT_TEST_SUITE_REGISTRATION(test_timsort);
 
 test_timsort::test_timsort() {
@@ -15,7 +32,7 @@ void test_timsort::tearDown() {
 }
 
 void test_timsort::test1() {
-    rs::LazyFlatSet<unsigned, std::less<unsigned>, std::equal_to<unsigned>, LazyFlatSetTimsort<unsigned>> set;
+    LazyFlatSetUnsigned set;
     for (unsigned i = 0; i < 10000; ++i) {
         set.insert(i);
         CPPUNIT_ASSERT(set.size() == i + 1);
@@ -32,7 +49,7 @@ void test_timsort::test1() {
 }
 
 void test_timsort::test2() {
-    rs::LazyFlatSet<unsigned, std::less<unsigned>, std::equal_to<unsigned>, LazyFlatSetTimsort<unsigned>> set;
+    LazyFlatSetUnsigned set;
     const unsigned max = 10000;
     for (unsigned i = 0; i < max; ++i) {
         unsigned k = max - i - 1;
@@ -58,7 +75,7 @@ void test_timsort::test3() {
     
     std::random_shuffle(data.begin(), data.end());
     
-    rs::LazyFlatSet<unsigned, std::less<unsigned>, std::equal_to<unsigned>, LazyFlatSetTimsort<unsigned>> set;
+    LazyFlatSetUnsigned set;
     for (unsigned i = 0; i < data.size(); ++i) {
         auto k = data[i];
         set.insert(k);
@@ -82,7 +99,7 @@ void test_timsort::test4() {
     
     std::random_shuffle(data.begin(), data.end());
     
-    rs::LazyFlatSet<unsigned, std::less<unsigned>, std::equal_to<unsigned>, LazyFlatSetTimsort<unsigned>> set;
+    LazyFlatSetUnsigned set;
     for (unsigned i = 0; i < data.size(); ++i) {
         auto k = data[i];
         set.insert(k);
@@ -119,7 +136,7 @@ void test_timsort::test5() {
     
     std::random_shuffle(data.begin(), data.end());
     
-    rs::LazyFlatSet<unsigned, std::less<unsigned>, std::equal_to<unsigned>, LazyFlatSetTimsort<unsigned>> set;
+    LazyFlatSetUnsigned set;
     for (unsigned i = 0; i < data.size(); ++i) {
         auto k = data[i];
         set.insert(k);
@@ -158,7 +175,7 @@ void test_timsort::test6() {
     
     std::random_shuffle(data.begin(), data.end());
     
-    rs::LazyFlatSet<unsigned, std::less<unsigned>, std::equal_to<unsigned>, LazyFlatSetTimsort<unsigned>> set;
+    LazyFlatSetUnsigned set;
     for (unsigned i = 0; i < data.size(); ++i) {
         auto k = data[i];
         set.insert(k);
