@@ -22,7 +22,7 @@ int main() {
 }
 ```
 
- You will need a decent C++ 11 compiler.
+We develop with Netbeans C++ IDE and GCC 4.9 on Debian. We expect it to work with any C++11 compiler including GCC 4.8 and clang 3.5.
 
 ## Performance
 
@@ -38,6 +38,3 @@ The following chart shows lazyflatset vs std::set and set::unordered_set with 5m
 </div>
 
 set::set is implemented as a binary tree (ordered sparse nodes), std::unordered_set as a hash table (unordered vector) and lazyflatset (unordered/ordered/ordered vector).
-
-## Compile and Build
-We develop with Netbeans C++ IDE and GCC 4.9 on Debian. We expect it to work with any C++11 compiler including GCC 4.8 and clang 3.5.
