@@ -9,6 +9,21 @@ When we say lazy we mean fast. `lazyflatset` started off attempting to solve tra
 
 See the [Boost docs](http://www.boost.org/doc/libs/1_58_0/doc/html/container/non_standard_containers.html#container.non_standard_containers.flat_xxx) for more info on why flat sets are interesting.
 
+## Usage
+Include the header and you are ready to go:
+
+```C++
+#include "lazyflatset.hpp"
+
+int main() {
+    rs::LazyFlatSet<unsigned> set;
+    set.insert(42);
+    return 0;
+}
+```
+
+ You will need a decent C++ 11 compiler.
+
 ## Performance
 
 The following chart shows lazyflatset vs std::set and set::unordered_set with 5m rows inserted. The rows are initially:
