@@ -41,4 +41,8 @@ set::set is implemented as a binary tree (ordered sparse nodes), std::unordered_
 
 For insert and lookup tests we would always expect unordered_set to perform very well. The chart above shows that for the descending and full shuffled cases lazyflatset approaches std::unordered_set performance. In the partial shuffle test performance is roughly equivalent to std::set.
 
-The big advantage lazyflatset has is in handling the data once inserted. The data is held in contiguous memory which means it is as fast as std::vector to enumerate.
+The big advantage lazyflatset has is in handling the data once inserted. The data is held in contiguous memory which means it is as fast as std::vector to enumerate with no additional memory or CPU overhead to yield sorted output. 
+
+Since std::set is sparse the data is spread all over the memory space (or at least that used by `new`). 
+
+std::unordered_set is continguous however it isn't sorted and generally uses a lot more memory to maintain fast insert and lookup performance.
