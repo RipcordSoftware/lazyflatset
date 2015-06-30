@@ -7,6 +7,8 @@ Like Boost's flat_set, but lazy.
 
 When we say lazy we mean fast. `lazyflatset` started off attempting to solve tragic `flat_set` performance with descending and random inserts. We've attempted to solve that by adding a small unsorted collection and sorted nursery collection while still maintaining the spirit of both std::set and set::vector interfaces.
 
+See the [Boost docs](http://www.boost.org/doc/libs/1_58_0/doc/html/container/non_standard_containers.html#container.non_standard_containers.flat_xxx) for more info on why flat sets are interesting.
+
 ## Performance
 
 <div>
@@ -14,6 +16,6 @@ When we say lazy we mean fast. `lazyflatset` started off attempting to solve tra
     <script data-plotly="craigminihan:71" src="https://plot.ly/embed.js" async></script>
 </div>
 
-We compile with GCC 4.9 on Debian. It'll probably work with any C++11 compiler.
 
-See the [Boost docs](http://www.boost.org/doc/libs/1_58_0/doc/html/container/non_standard_containers.html#container.non_standard_containers.flat_xxx) for more info on why flat sets are interesting.
+## Compile and Build
+We develop with Netbeans C++ IDE and GCC 4.9 on Debian. We expect it to work with any C++11 compiler including GCC 4.8 and clang 3.5.
