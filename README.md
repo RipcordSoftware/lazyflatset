@@ -29,7 +29,7 @@ We expect lazyflatset to work with any C++11 compiler including GCC 4.8 and clan
 The following chart shows lazyflatset vs std::set and set::unordered_set with 5m rows inserted. The rows are initially:
 * ordered ascending
 * ordered descending
-* partially shuffled - the ordered data is split into equal partitions and shuffled independently, eg. {3142}{6587}
+* partially shuffled - the ordered data is split into equal partitions and shuffled independently, eg. 12345678 becomes {3142}{6587}
 * fully shuffled
 
 <div>
