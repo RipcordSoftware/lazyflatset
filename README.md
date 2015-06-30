@@ -11,6 +11,12 @@ See the [Boost docs](http://www.boost.org/doc/libs/1_58_0/doc/html/container/non
 
 ## Performance
 
+The following chart shows lazyflatset vs std::set and set::unordered_set with 5m rows inserted. The rows are initially:
+* ordered ascending
+* ordered descending
+* partially shuffled (the ordered data is split into equal partitions and shuffled indepenently, eg. {3142}{6587})
+* fully shuffled
+
 <div>
     <a href="https://plot.ly/~craigminihan/71/" target="_blank" title="std::set, std::unordered_set vs rs::lazyflatset(128, 32768) - 5m rows - Debian 8.1 - i7-4820k" style="display: block; text-align: center;"><img src="https://plot.ly/~craigminihan/71.png" alt="std::set, std::unordered_set vs rs::lazyflatset(128, 32768) - 5m rows - Debian 8.1 - i7-4820k" style="max-width: 100%;width: 1944px;"  width="1944" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
     <script data-plotly="craigminihan:71" src="https://plot.ly/embed.js" async></script>
