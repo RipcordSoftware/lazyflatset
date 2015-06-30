@@ -14,7 +14,7 @@ See the [Boost docs](http://www.boost.org/doc/libs/1_58_0/doc/html/container/non
 The following chart shows lazyflatset vs std::set and set::unordered_set with 5m rows inserted. The rows are initially:
 * ordered ascending
 * ordered descending
-* partially shuffled (the ordered data is split into equal partitions and shuffled indepenently, eg. {3142}{6587})
+* partially shuffled - the ordered data is split into equal partitions and shuffled indepenently, eg. {3142}{6587}
 * fully shuffled
 
 <div>
