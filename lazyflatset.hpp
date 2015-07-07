@@ -74,6 +74,35 @@ public:
         }
     }
     
+    template <typename... Args>
+    void emplace(Args&&... args) {
+        if (unsorted_.size() == maxUnsortedEntries_) {
+            flushUnsorted();
+        }
+
+        unsorted_.emplace_back(std::forward<Args>(args)...);
+        
+        auto iter = lower_bound_equals(coll_, unsorted_.back());
+        if (iter != coll_.end()) {
+            *iter = std::move(unsorted_.back());
+            unsorted_.pop_back();
+        } else {
+            iter = lower_bound_equals(nursery_, unsorted_.back());
+            if (iter != nursery_.end()) {
+                *iter = std::move(unsorted_.back());
+                unsorted_.pop_back();
+            } else if (unsorted_.size() > 1) {
+                auto newItemIter = unsorted_.end() - 1;
+                
+                iter = search_unsorted(unsorted_, unsorted_.back());
+                if (iter != newItemIter) {
+                    *iter = std::move(unsorted_.back());
+                    unsorted_.pop_back();
+                }
+            }
+        }
+    }
+    
     bool empty() const {
         return coll_.empty() && nursery_.empty() && unsorted_.empty();
     }
@@ -248,7 +277,7 @@ private:
                 target.insert(target.begin(), source.cbegin(), source.cend());
             } else {
                 target.insert(target.begin(), source.cbegin(), source.cend());
-                std::inplace_merge(target.begin(), target.begin() + source.size(), target.end());
+                std::inplace_merge(target.begin(), target.begin() + source.size(), target.end(), less);
             }
         }
     }

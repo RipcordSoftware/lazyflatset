@@ -28,6 +28,14 @@
         <itemPath>tests/basic_operations.h</itemPath>
         <itemPath>tests/basic_operations_runner.cpp</itemPath>
       </logicalFolder>
+      <logicalFolder name="f3"
+                     displayName="Class Operations"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/class_operations.cpp</itemPath>
+        <itemPath>tests/class_operations.h</itemPath>
+        <itemPath>tests/class_operations_runner.cpp</itemPath>
+      </logicalFolder>
       <logicalFolder name="f2"
                      displayName="Test TimSort"
                      projectFiles="true"
@@ -104,6 +112,20 @@
           </linkerLibItems>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f3</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/basic_operations.cpp" ex="false" tool="1" flavor2="0">
@@ -111,6 +133,12 @@
       <item path="tests/basic_operations.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="tests/basic_operations_runner.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/class_operations.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/class_operations.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/class_operations_runner.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/test_timsort.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -186,6 +214,20 @@
           </linkerLibItems>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f3</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/basic_operations.cpp" ex="false" tool="1" flavor2="0">
@@ -193,6 +235,12 @@
       <item path="tests/basic_operations.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="tests/basic_operations_runner.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/class_operations.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/class_operations.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/class_operations_runner.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/test_timsort.cpp" ex="false" tool="1" flavor2="0">
       </item>
