@@ -5,7 +5,7 @@
 # lazyflatset
 Like Boost's flat_set, but lazy. 
 
-When we say lazy we mean fast. `lazyflatset` started off attempting to solve tragic `flat_set` performance with descending and random inserts. We've solved that by adding a small unsorted collection and sorted nursery collection while still maintaining the spirit of both std::set and set::vector interfaces.
+When we say lazy we mean fast. `lazyflatset` started off attempting to solve tragic `boost::flat_set` performance with descending and random inserts. We've solved that by adding a small unsorted collection and sorted nursery collection while still maintaining the spirit of both std::set and set::vector interfaces.
 
 See the [Boost docs](http://www.boost.org/doc/libs/1_58_0/doc/html/container/non_standard_containers.html#container.non_standard_containers.flat_xxx) for more info on why flat sets are interesting.
 
@@ -26,7 +26,7 @@ We expect lazyflatset to work with any C++11 compiler including GCC 4.8 and clan
 
 ## Performance
 
-The following chart shows lazyflatset vs std::set and set::unordered_set with 5m rows inserted. The rows are initially:
+The following chart shows lazyflatset vs std::set and std::unordered_set with 5m rows inserted. The rows are initially:
 * ordered ascending
 * ordered descending
 * partially shuffled - the ordered data is split into equal partitions and shuffled independently, eg. 12345678 becomes {3142}{6587}
