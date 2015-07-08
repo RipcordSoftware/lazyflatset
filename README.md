@@ -5,7 +5,7 @@
 # lazyflatset
 Like Boost's flat_set, but lazy. 
 
-When we say lazy we mean fast. `lazyflatset` started off attempting to solve tragic `flat_set` performance with descending and random inserts. We've attempted to solve that by adding a small unsorted collection and sorted nursery collection while still maintaining the spirit of both std::set and set::vector interfaces.
+When we say lazy we mean fast. `lazyflatset` started off attempting to solve tragic `flat_set` performance with descending and random inserts. We've solved that by adding a small unsorted collection and sorted nursery collection while still maintaining the spirit of both std::set and set::vector interfaces.
 
 See the [Boost docs](http://www.boost.org/doc/libs/1_58_0/doc/html/container/non_standard_containers.html#container.non_standard_containers.flat_xxx) for more info on why flat sets are interesting.
 
@@ -37,7 +37,7 @@ The following chart shows lazyflatset vs std::set and set::unordered_set with 5m
     <script data-plotly="craigminihan:71" src="https://plot.ly/embed.js" async></script>
 </div>
 
-set::set is implemented as a binary tree (ordered sparse nodes), std::unordered_set as a hash table (unordered vector) and lazyflatset as hybrid vectors (unordered/ordered/ordered vectors).
+std::set is implemented as a binary tree (ordered sparse nodes), std::unordered_set as a hash table (unordered vector) and lazyflatset as hybrid vectors (unordered/ordered/ordered vectors).
 
 For insert and lookup tests we would always expect unordered_set to perform very well. The chart above shows that for the descending and full shuffled cases lazyflatset approaches std::unordered_set performance. In the partial shuffle test performance is roughly equivalent to std::set.
 
@@ -48,3 +48,12 @@ Since std::set is sparse the data is spread all over the memory space (or at lea
 std::unordered_set is continguous however it isn't sorted and generally uses a lot more memory than tree and vector based collections to maintain fast insert and lookup performance. To acquire sorted iterateable output would require additional new[n] and sort[n] operations.
 
 The code to generate the data behind the graph can be found here: https://github.com/RipcordSoftware/lazyflatset/blob/master/lazyflatset.hpp.
+
+## Building the Tests
+To build the tests follow these steps:
+```shell
+sudo apt-get install libcppunit-dev
+git clone --recursive https://github.com/RipcordSoftware/lazyflatset.git
+cd lazyflatset
+make test
+```
