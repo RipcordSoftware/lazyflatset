@@ -57,3 +57,13 @@ git clone --recursive https://github.com/RipcordSoftware/lazyflatset.git
 cd lazyflatset
 make test
 ```
+To view coverage you need to install:
+* Ruby
+* lcov
+* python
+* python-pip
+
+To create a coverage report run:
+```shell
+./coverage.sh
+```
