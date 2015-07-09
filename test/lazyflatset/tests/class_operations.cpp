@@ -2,6 +2,8 @@
 
 #include "../../../lazyflatset.hpp"
 
+#include <memory>
+
 CPPUNIT_TEST_SUITE_REGISTRATION(class_operations);
 
 struct Test {
@@ -13,6 +15,10 @@ struct Test {
         bool operator()(const Test* x, const Test* y) const {
             return x->data_ < y->data_;
         }
+        
+        bool operator()(const std::shared_ptr<Test>& x, const std::shared_ptr<Test>& y) const {
+            return x->data_ < y->data_;
+        }
     };
     
     struct Equals {
@@ -21,6 +27,10 @@ struct Test {
         }
         
         bool operator()(const Test* x, const Test* y) const {
+            return x->data_ == y->data_;
+        }
+        
+        bool operator()(const std::shared_ptr<Test>& x, const std::shared_ptr<Test>& y) const {
             return x->data_ == y->data_;
         }
     };
@@ -58,6 +68,7 @@ unsigned Test::destructorCount_ = 0;
 
 using LazyFlatSetTest = rs::LazyFlatSet<Test, Test::Less, Test::Equals>;
 using LazyFlatSetTestPtr = rs::LazyFlatSet<Test*, Test::Less, Test::Equals>;
+using LazyFlatSetTestSmartPtr = rs::LazyFlatSet<std::shared_ptr<Test>, Test::Less, Test::Equals>;
 
 class_operations::class_operations() {
 }
@@ -443,6 +454,55 @@ void class_operations::test21() {
     set.shrink_to_fit();
     
     set.clear_fn(Test::Erase{});
+        
+    CPPUNIT_ASSERT_EQUAL(max, Test::destructorCount_);        
+    CPPUNIT_ASSERT_EQUAL(0ul, set.size());
+}
+
+void class_operations::test22() {
+    LazyFlatSetTestSmartPtr set;
+    
+    set.emplace(new Test(1));
+    set.emplace(new Test(4));
+    set.emplace(new Test(7));   
+    set.emplace(new Test(42));
+    CPPUNIT_ASSERT_EQUAL(4ul, set.size());
+    
+    auto v = set.find_fn([](const std::shared_ptr<Test>& t) { return 42 - t->value(); });
+    CPPUNIT_ASSERT(v != nullptr);
+    CPPUNIT_ASSERT_EQUAL(42u, v[0]->value());
+    
+    set.clear();
+    
+    CPPUNIT_ASSERT_EQUAL(4u, Test::destructorCount_);        
+    CPPUNIT_ASSERT_EQUAL(0ul, set.size());
+}
+
+void class_operations::test23() {
+    LazyFlatSetTestSmartPtr set;
+    
+    const unsigned max = 1000;    
+    for (unsigned i = 0; i < 1000; i++) {
+        set.emplace(new Test(i));
+    }
+    
+    set.clear();
+        
+    CPPUNIT_ASSERT_EQUAL(max, Test::destructorCount_);        
+    CPPUNIT_ASSERT_EQUAL(0ul, set.size());
+}
+
+void class_operations::test24() {
+    LazyFlatSetTestSmartPtr set;
+    
+    const unsigned max = 1000;    
+    for (unsigned i = 0; i < 1000; i++) {
+        set.emplace(new Test(i));
+    }
+    
+    set.shrink_to_fit();
+    
+    set.clear();
         
     CPPUNIT_ASSERT_EQUAL(max, Test::destructorCount_);        
     CPPUNIT_ASSERT_EQUAL(0ul, set.size());
