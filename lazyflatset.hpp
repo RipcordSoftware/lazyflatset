@@ -32,19 +32,19 @@
 
 namespace rs {
     
-template <class Key, class Less>
+template <class Value, class Less>
 struct LazyFlatSetQuickSort;
 
-template <class Key, class Less = std::less<Key>, class Equal = std::equal_to<Key>, class Sort = LazyFlatSetQuickSort<Key, Less>, class Alloc = std::allocator<Key>>
+template <class Value, class Less = std::less<Value>, class Equal = std::equal_to<Value>, class Sort = LazyFlatSetQuickSort<Value, Less>, class Alloc = std::allocator<Value>>
 class LazyFlatSet {
 public:
-    using base_collection = typename std::vector<Key, Alloc>;
+    using base_collection = typename std::vector<Value, Alloc>;
     using size_type = typename base_collection::size_type;
     using iterator = typename base_collection::iterator;
     using const_iterator = typename base_collection::const_iterator;
-    using value_type = Key;
-    using reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, value_type&>::type;
-    using const_reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, const value_type&>::type;
+    using value_type = Value;
+    using reference = typename std::conditional<std::is_fundamental<Value>::value || std::is_pointer<Value>::value, value_type, value_type&>::type;
+    using const_reference = typename std::conditional<std::is_fundamental<Value>::value || std::is_pointer<Value>::value, value_type, const value_type&>::type;
     using less_type = Less;
     using equal_type = Equal;
     using compare_type = typename std::function<int(const_reference)>;        
@@ -375,9 +375,9 @@ private:
     mutable base_collection unsorted_;
 };
 
-template <class Key, class Less>
+template <class Value, class Less>
 struct LazyFlatSetQuickSort {
-    void operator()(typename LazyFlatSet<Key>::iterator first, typename LazyFlatSet<Key>::iterator last) {
+    void operator()(typename LazyFlatSet<Value>::iterator first, typename LazyFlatSet<Value>::iterator last) {
         std::sort(first, last, Less{});
     }
 };
