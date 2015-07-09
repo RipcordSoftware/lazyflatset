@@ -292,7 +292,7 @@ public:
             if (erase != nullptr) {
                 erase(coll_[index]);
             }
-            coll_.erase(coll_.cbegin() + index);
+            coll_.erase(coll_.begin() + index);
             count = 1;
         } else {
             index = search(nursery_, compare);
@@ -300,7 +300,7 @@ public:
                 if (erase != nullptr) {
                     erase(nursery_[index]);
                 }
-                nursery_.erase(nursery_.cbegin() + index);
+                nursery_.erase(nursery_.begin() + index);
                 count = 1;
             } else {
                 index = search_unsorted(unsorted_, compare);
@@ -308,7 +308,7 @@ public:
                     if (erase != nullptr) {
                         erase(unsorted_[index]);
                     }
-                    unsorted_.erase(unsorted_.cbegin() + index);
+                    unsorted_.erase(unsorted_.begin() + index);
                     count = 1;
                 }
             }
