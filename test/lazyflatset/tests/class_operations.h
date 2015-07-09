@@ -20,6 +20,13 @@ class class_operations : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test12);
     CPPUNIT_TEST(test13);
     CPPUNIT_TEST(test14);
+    CPPUNIT_TEST(test15);
+    CPPUNIT_TEST(test16);
+    CPPUNIT_TEST(test17);
+    CPPUNIT_TEST(test18);
+    CPPUNIT_TEST(test19);
+    CPPUNIT_TEST(test20);
+    CPPUNIT_TEST(test21);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -44,6 +51,13 @@ private:
     void test12();
     void test13();
     void test14();
+    void test15();
+    void test16();
+    void test17();
+    void test18();
+    void test19();
+    void test20();
+    void test21();
 };
 
 #endif	/* CLASS_OPERATIONS_H */

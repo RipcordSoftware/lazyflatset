@@ -47,7 +47,10 @@ public:
     using const_reference = typename std::conditional<std::is_fundamental<Value>::value || std::is_pointer<Value>::value, value_type, const value_type&>::type;
     using less_type = Less;
     using equal_type = Equal;
-    using compare_type = typename std::function<int(const_reference)>;        
+    using sort_type = Sort;
+    using alloc_type = Alloc;
+    using compare_type = typename std::function<int(const_reference)>;
+    using erase_type = typename std::function<void(reference)>;
     
     LazyFlatSet(unsigned maxUnsortedEntries = 16, unsigned maxNurseryEntries = 1024) : 
             maxUnsortedEntries_(maxUnsortedEntries), maxNurseryEntries_(maxNurseryEntries) {
@@ -113,6 +116,26 @@ public:
     void clear() {
         coll_.clear();
         nursery_.clear();
+        unsorted_.clear();
+    }
+    
+    void clear_fn(erase_type erase) {
+        for (auto i : coll_) {
+            erase(i);
+        }
+        
+        coll_.clear();
+        
+        for (auto i : nursery_) {
+            erase(i);
+        }
+        
+        nursery_.clear();
+        
+        for (auto i : unsorted_) {
+            erase(i);
+        }
+        
         unsorted_.clear();
     }
     
@@ -201,11 +224,11 @@ public:
         
         auto index = search(coll_, compare);
         if (index != search_end) {
-            value = &coll_[index];            
+            value = &coll_[index];
         } else {
             index = search(nursery_, compare);
             if (index != search_end) {
-                value = &nursery_[index];                
+                value = &nursery_[index];
             } else {
                 index = search_unsorted(unsorted_, compare);
                 if (index != search_end) {
@@ -214,7 +237,7 @@ public:
             }
         }
         
-         return value;
+        return value;
     }
     
     const_reference operator[](size_type n) const {
@@ -253,6 +276,39 @@ public:
                 iter = search_unsorted(unsorted_, k);
                 if (iter != unsorted_.end()) {
                     unsorted_.erase(iter);
+                    count = 1;
+                }
+            }
+        }
+        
+        return count;
+    }
+    
+    size_type erase_fn(compare_type compare, erase_type erase = nullptr) {
+        size_type count = 0;
+        
+        auto index = search(coll_, compare);
+        if (index != search_end) {
+            if (erase != nullptr) {
+                erase(coll_[index]);
+            }
+            coll_.erase(coll_.cbegin() + index);
+            count = 1;
+        } else {
+            index = search(nursery_, compare);
+            if (index != search_end) {
+                if (erase != nullptr) {
+                    erase(nursery_[index]);
+                }
+                nursery_.erase(nursery_.cbegin() + index);
+                count = 1;
+            } else {
+                index = search_unsorted(unsorted_, compare);
+                if (index != search_end) {
+                    if (erase != nullptr) {
+                        erase(unsorted_[index]);
+                    }
+                    unsorted_.erase(unsorted_.cbegin() + index);
                     count = 1;
                 }
             }

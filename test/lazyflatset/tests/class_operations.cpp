@@ -9,11 +9,25 @@ struct Test {
         bool operator()(const Test& x, const Test& y) const {
             return x.data_ < y.data_;
         }
+        
+        bool operator()(const Test* x, const Test* y) const {
+            return x->data_ < y->data_;
+        }
     };
     
     struct Equals {
         bool operator()(const Test& x, const Test& y) const {
             return x.data_ == y.data_;
+        }
+        
+        bool operator()(const Test* x, const Test* y) const {
+            return x->data_ == y->data_;
+        }
+    };
+    
+    struct Erase {
+        void operator()(Test* t) {
+            delete t;
         }
     };
     
@@ -28,13 +42,22 @@ struct Test {
         data_ = other.data_;
     }
     
+    ~Test() {
+        ++destructorCount_;
+    }
+    
     unsigned value() const { return data_; }
+    
+    static unsigned destructorCount_;
     
 private:
     unsigned data_;
 };
 
+unsigned Test::destructorCount_ = 0;
+
 using LazyFlatSetTest = rs::LazyFlatSet<Test, Test::Less, Test::Equals>;
+using LazyFlatSetTestPtr = rs::LazyFlatSet<Test*, Test::Less, Test::Equals>;
 
 class_operations::class_operations() {
 }
@@ -43,6 +66,7 @@ class_operations::~class_operations() {
 }
 
 void class_operations::setUp() {
+    Test::destructorCount_ = 0;
 }
 
 void class_operations::tearDown() {
@@ -272,4 +296,154 @@ void class_operations::test14() {
     auto v = set.find_fn(func);
     CPPUNIT_ASSERT(v != nullptr);
     CPPUNIT_ASSERT_EQUAL(42u, v->value());
+}
+
+void class_operations::test15() {
+    LazyFlatSetTest set;
+    
+    set.emplace(1);
+    set.emplace(4);
+    set.emplace(7);
+    
+    const unsigned value = 42;
+    set.emplace(value);
+        
+    auto func = [=](const Test& t) { 
+        return value - t.value(); 
+    };
+    
+    CPPUNIT_ASSERT_EQUAL(1ul, set.erase_fn(func));
+    CPPUNIT_ASSERT_EQUAL(0ul, set.erase_fn(func));
+    CPPUNIT_ASSERT_EQUAL(3ul, set.size());
+}
+
+void class_operations::test16() {
+    LazyFlatSetTest set;
+    
+    set.emplace(1);
+    set.emplace(4);
+    set.emplace(7);
+    
+    const unsigned value = 42;
+    set.emplace(value);
+        
+    auto func = [=](const Test& t) { 
+        return value - t.value(); 
+    };
+    
+    int eraseCount = 0;
+    auto eraseFunc = [&](Test& t) {
+        ++eraseCount;
+    };
+    
+    CPPUNIT_ASSERT_EQUAL(1ul, set.erase_fn(func, eraseFunc));
+    CPPUNIT_ASSERT_EQUAL(1, eraseCount);
+    CPPUNIT_ASSERT_EQUAL(3ul, set.size());
+    
+    eraseCount = 0;
+    CPPUNIT_ASSERT_EQUAL(0ul, set.erase_fn(func, eraseFunc));
+    CPPUNIT_ASSERT_EQUAL(0, eraseCount);
+    CPPUNIT_ASSERT_EQUAL(3ul, set.size());
+}
+
+void class_operations::test17() {
+    LazyFlatSetTest set;
+        
+    const unsigned max = 1000;
+    for (unsigned i = 0; i < max; i++) {
+        set.emplace(i);
+    }
+    
+    const unsigned value = 42;    
+    auto func = [=](const Test& t) { 
+        return value - t.value(); 
+    };
+    
+    int eraseCount = 0;
+    auto eraseFunc = [&](Test& t) {
+        ++eraseCount;
+    };
+    
+    CPPUNIT_ASSERT_EQUAL(1ul, set.erase_fn(func, eraseFunc));
+    CPPUNIT_ASSERT_EQUAL(1, eraseCount);
+    CPPUNIT_ASSERT_EQUAL(static_cast<LazyFlatSetTest::size_type>(max - 1), set.size());
+    
+    eraseCount = 0;
+    CPPUNIT_ASSERT_EQUAL(0ul, set.erase_fn(func, eraseFunc));
+    CPPUNIT_ASSERT_EQUAL(0, eraseCount);
+    CPPUNIT_ASSERT_EQUAL(static_cast<LazyFlatSetTest::size_type>(max - 1), set.size());
+}
+
+void class_operations::test18() {
+    LazyFlatSetTest set;
+        
+    const unsigned max = 1000;
+    for (unsigned i = 0; i < max; i++) {
+        set.emplace(i);
+    }
+    
+    set.shrink_to_fit();
+    
+    const unsigned value = 42;    
+    auto func = [=](const Test& t) { 
+        return value - t.value(); 
+    };        
+    
+    int eraseCount = 0;
+    auto eraseFunc = [&](Test& t) {
+        ++eraseCount;
+    };
+    
+    CPPUNIT_ASSERT_EQUAL(1ul, set.erase_fn(func, eraseFunc));
+    CPPUNIT_ASSERT_EQUAL(1, eraseCount);
+    CPPUNIT_ASSERT_EQUAL(static_cast<LazyFlatSetTest::size_type>(max - 1), set.size());
+    
+    eraseCount = 0;
+    CPPUNIT_ASSERT_EQUAL(0ul, set.erase_fn(func, eraseFunc));
+    CPPUNIT_ASSERT_EQUAL(0, eraseCount);
+    CPPUNIT_ASSERT_EQUAL(static_cast<LazyFlatSetTest::size_type>(max - 1), set.size());
+}
+
+void class_operations::test19() {
+    LazyFlatSetTestPtr set;
+    
+    set.insert(new Test(1));
+    set.insert(new Test(4));
+    set.insert(new Test(7));   
+    set.insert(new Test(42));
+    
+    set.clear_fn([](Test* t) { delete t; });
+        
+    CPPUNIT_ASSERT_EQUAL(4u, Test::destructorCount_);        
+    CPPUNIT_ASSERT_EQUAL(0ul, set.size());
+}
+
+void class_operations::test20() {
+    LazyFlatSetTestPtr set;
+    
+    const unsigned max = 1000;    
+    for (unsigned i = 0; i < 1000; i++) {
+        set.insert(new Test(i));
+    }
+    
+    set.clear_fn(Test::Erase{});
+        
+    CPPUNIT_ASSERT_EQUAL(max, Test::destructorCount_);        
+    CPPUNIT_ASSERT_EQUAL(0ul, set.size());
+}
+
+void class_operations::test21() {
+    LazyFlatSetTestPtr set;
+    
+    const unsigned max = 1000;    
+    for (unsigned i = 0; i < 1000; i++) {
+        set.insert(new Test(i));
+    }
+    
+    set.shrink_to_fit();
+    
+    set.clear_fn(Test::Erase{});
+        
+    CPPUNIT_ASSERT_EQUAL(max, Test::destructorCount_);        
+    CPPUNIT_ASSERT_EQUAL(0ul, set.size());
 }
