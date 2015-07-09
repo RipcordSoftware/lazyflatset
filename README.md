@@ -58,12 +58,13 @@ cd lazyflatset
 make test
 ```
 To view coverage you need to install:
-* Ruby
-* lcov
-* python
-* python-pip
+```bash
+sudo apt-get install ruby 
+sudo apt-get install lcov
+sudo apt-get install python-dev
+```
 
 To create a coverage report run:
-```shell
+```bash
 ./coverage.sh
 ```
