@@ -45,6 +45,9 @@ public:
     using value_type = Key;
     using reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, value_type&>::type;
     using const_reference = typename std::conditional<std::is_fundamental<Key>::value || std::is_pointer<Key>::value, value_type, const value_type&>::type;
+    using less_type = Less;
+    using equal_type = Equal;
+    using compare_type = typename std::function<int(const_reference)>;        
     
     LazyFlatSet(unsigned maxUnsortedEntries = 16, unsigned maxNurseryEntries = 1024) : 
             maxUnsortedEntries_(maxUnsortedEntries), maxNurseryEntries_(maxNurseryEntries) {
@@ -146,6 +149,27 @@ public:
         }
         
         return found;
+    }   
+    
+    size_type count_fn(compare_type compare) const {
+        size_type found = 0;
+        
+        auto index = search(coll_, compare);
+        if (index != search_end) {
+            found = 1;
+        } else {
+            index = search(nursery_, compare);
+            if (index != search_end) {
+                found = 1;
+            } else {
+                index = search_unsorted(unsorted_, compare);
+                if (index != search_end) {
+                    found = 1;
+                }
+            }
+        }
+        
+        return found;
     }
     
     bool find(const value_type& k, value_type& v) {
@@ -170,6 +194,27 @@ public:
         }
         
          return found;
+    }
+    
+    value_type* find_fn(compare_type compare) {
+        value_type* value = nullptr;
+        
+        auto index = search(coll_, compare);
+        if (index != search_end) {
+            value = &coll_[index];            
+        } else {
+            index = search(nursery_, compare);
+            if (index != search_end) {
+                value = &nursery_[index];                
+            } else {
+                index = search_unsorted(unsorted_, compare);
+                if (index != search_end) {
+                    value = &unsorted_[index];
+                }
+            }
+        }
+        
+         return value;
     }
     
     const_reference operator[](size_type n) const {
@@ -217,10 +262,12 @@ public:
     }
     
 private:
+    const size_type search_end = -1;
+    
     void sort(base_collection& coll) const {
         Sort{}(coll.begin(), coll.end());
     }
-    
+
     iterator lower_bound(base_collection& coll, const value_type& k) const {
         return std::lower_bound(coll.begin(), coll.end(), k, Less{});
     }
@@ -237,6 +284,44 @@ private:
     iterator upper_bound_equals(base_collection& coll, const value_type& k) const {
         auto iter = upper_bound(coll, k);
         return iter != coll.end() && Equal{}(*iter, k) ? iter : coll.end();
+    }
+    
+    size_type search(base_collection& coll, compare_type compare) const {
+        const auto size = coll.size();
+        
+        if (size > 0) {
+            size_type min = 0;
+            size_type max = size - 1;
+            const auto data = coll.data();
+
+            while (max >= min) {
+                auto mid = ((max - min) / 2) + min;
+
+                const auto& item = data[mid];
+                auto diff = compare(item);
+                if (diff == 0) {
+                    return mid;
+                } else if (diff < 0) {
+                    max = mid - 1;
+                } else {
+                    min = mid + 1;
+                }
+            }
+        }
+        
+        return search_end;
+    }
+    
+    size_type search_unsorted(base_collection& coll, compare_type compare) const {
+        const auto data = coll.data();
+        
+        for (size_type i = 0, size = coll.size(); i < size; ++i) {
+            if (compare(data[i]) == 0) {
+                return i;
+            }
+        }
+        
+        return search_end;
     }
     
     iterator search_unsorted(base_collection& coll, const value_type& k) const {

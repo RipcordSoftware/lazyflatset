@@ -164,3 +164,112 @@ void class_operations::test8() {
     CPPUNIT_ASSERT(set.size() == 0);
     CPPUNIT_ASSERT(set.count(0) == 0);
 }
+
+void class_operations::test9() {
+    LazyFlatSetTest set;
+    
+    set.emplace(1);
+    set.emplace(4);
+    set.emplace(7);
+    
+    const unsigned value = 42;
+    set.emplace(value);
+        
+    auto func = [=](const Test& t) { 
+        return value - t.value(); 
+    };
+    
+    CPPUNIT_ASSERT_EQUAL(1ul, set.count_fn(func));
+    CPPUNIT_ASSERT_EQUAL(0ul, set.count_fn([](const Test& t){ return 99 - t.value(); } ));
+    CPPUNIT_ASSERT_EQUAL(0ul, set.count_fn([](const Test& t){ return 0 - t.value(); } ));
+}
+
+void class_operations::test10() {
+    LazyFlatSetTest set;
+        
+    for (unsigned i = 0; i < 1000; i++) {
+        set.emplace(i);
+    }
+    
+    const unsigned value = 42;    
+    auto func = [=](const Test& t) { 
+        return value - t.value(); 
+    };
+    
+    CPPUNIT_ASSERT_EQUAL(1ul, set.count_fn(func));
+}
+
+void class_operations::test11() {
+    LazyFlatSetTest set;
+        
+    for (unsigned i = 0; i < 1000; i++) {
+        set.emplace(i);
+    }    
+
+    set.shrink_to_fit();
+    
+    const unsigned value = 42;    
+    auto func = [=](const Test& t) { 
+        return value - t.value(); 
+    };
+    
+    CPPUNIT_ASSERT_EQUAL(1ul, set.count_fn(func));
+}
+
+void class_operations::test12() {
+    LazyFlatSetTest set;
+    
+    set.emplace(1);
+    set.emplace(4);
+    set.emplace(7);
+    
+    const unsigned value = 42;
+    set.emplace(value);
+    
+    auto func = [=](const Test& t) { 
+        return value - t.value(); 
+    };
+    
+    auto v = set.find_fn(func);
+    CPPUNIT_ASSERT(v != nullptr);
+    CPPUNIT_ASSERT_EQUAL(42u, v->value());
+    
+    CPPUNIT_ASSERT(nullptr == set.find_fn([](const Test& t){ return 99 - t.value(); } ));
+    CPPUNIT_ASSERT(nullptr == set.find_fn([](const Test& t){ return 0 - t.value(); } ));
+}
+
+void class_operations::test13() {
+    LazyFlatSetTest set;
+        
+    for (unsigned i = 0; i < 1000; i++) {
+        set.emplace(i);
+    }    
+    
+    const unsigned value = 42;    
+    auto func = [=](const Test& t) { 
+        return value - t.value(); 
+    };
+    
+    auto v = set.find_fn(func);
+    CPPUNIT_ASSERT(v != nullptr);
+    CPPUNIT_ASSERT_EQUAL(42u, v->value());
+}
+
+void class_operations::test14() {
+    LazyFlatSetTest set;
+        
+    for (unsigned i = 0; i < 1000; i++) {
+        set.emplace(i);
+    }
+    
+    set.shrink_to_fit();
+    
+    const unsigned value = 42;    
+    auto func = [=](const Test& t) { 
+        return value - t.value(); 
+    };
+    
+    auto v = set.find_fn(func);
+    CPPUNIT_ASSERT(v != nullptr);
+    CPPUNIT_ASSERT_EQUAL(42u, v->value());
+}
