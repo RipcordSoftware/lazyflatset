@@ -470,7 +470,8 @@ void class_operations::test22() {
     
     auto v = set.find_fn([](const std::shared_ptr<Test>& t) { return 42 - t->value(); });
     CPPUNIT_ASSERT(v != nullptr);
-    CPPUNIT_ASSERT_EQUAL(42u, v[0]->value());
+    CPPUNIT_ASSERT_EQUAL(42u, v->value());
+    v.reset();
     
     set.clear();
     

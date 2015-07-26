@@ -29,22 +29,29 @@
 #include <algorithm>
 #include <type_traits>
 #include <functional>
+#include <memory>
 
 namespace rs {
     
 template <class Value, class Less>
 struct LazyFlatSetQuickSort;
 
-template <class Value, class Less = std::less<Value>, class Equal = std::equal_to<Value>, class Sort = LazyFlatSetQuickSort<Value, Less>, class Alloc = std::allocator<Value>>
+template <class Value, class Less = std::less<Value>, class Equal = std::equal_to<Value>, class Sort = LazyFlatSetQuickSort<Value, Less>, class Alloc = std::allocator<Value>, bool IsPointer = false>
 class LazyFlatSet {
 public:
+    template <class T> struct is_shared_ptr : std::false_type {};
+    template <class T> struct is_shared_ptr<std::shared_ptr<T> > : std::true_type {};
+    
+    template <class T> struct is_pointer : std::conditional<IsPointer || std::is_pointer<T>::value || is_shared_ptr<T>::value, std::true_type, std::false_type>::type {};
+    
     using base_collection = typename std::vector<Value, Alloc>;
     using size_type = typename base_collection::size_type;
     using iterator = typename base_collection::iterator;
     using const_iterator = typename base_collection::const_iterator;
     using value_type = Value;
-    using reference = typename std::conditional<std::is_fundamental<Value>::value || std::is_pointer<Value>::value, value_type, value_type&>::type;
-    using const_reference = typename std::conditional<std::is_fundamental<Value>::value || std::is_pointer<Value>::value, value_type, const value_type&>::type;
+    using value_type_ptr = typename std::conditional<is_pointer<value_type>::value, value_type, value_type*>::type;
+    using reference = typename std::conditional<std::is_fundamental<value_type>::value || std::is_pointer<value_type>::value, value_type, value_type&>::type;
+    using const_reference = typename std::conditional<std::is_fundamental<value_type>::value || std::is_pointer<value_type>::value, value_type, const value_type&>::type;
     using less_type = Less;
     using equal_type = Equal;
     using sort_type = Sort;
@@ -218,28 +225,28 @@ public:
         
          return found;
     }
-    
-    value_type* find_fn(compare_type compare) {
-        value_type* value = nullptr;
+        
+    value_type_ptr find_fn(compare_type compare) {
+        value_type_ptr value = nullptr;
         
         auto index = search(coll_, compare);
         if (index != search_end) {
-            value = &coll_[index];
+            value = getValue(coll_, index, is_pointer<value_type>());
         } else {
             index = search(nursery_, compare);
             if (index != search_end) {
-                value = &nursery_[index];
+                value = getValue(nursery_, index, is_pointer<value_type>());
             } else {
                 index = search_unsorted(unsorted_, compare);
                 if (index != search_end) {
-                    value = &unsorted_[index];
+                    value = getValue(unsorted_, index, is_pointer<value_type>());
                 }
             }
         }
         
         return value;
     }
-    
+        
     const_reference operator[](size_type n) const {
         flush();
         return coll_[n];
@@ -422,6 +429,14 @@ private:
             }
         }
     }
+    
+    value_type getValue(base_collection& coll, int index, std::true_type) {
+        return coll[index];
+    }    
+    
+    value_type_ptr getValue(base_collection& coll, int index, std::false_type) {
+        return &coll[index];
+    }    
     
     const unsigned maxUnsortedEntries_;
     const unsigned maxNurseryEntries_;
