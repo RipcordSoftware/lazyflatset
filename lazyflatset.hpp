@@ -357,7 +357,7 @@ private:
             size_type max = size - 1;
             const auto data = coll.data();
 
-            while (max >= min) {
+            while (max != search_end && max >= min) {
                 auto mid = ((max - min) / 2) + min;
 
                 const auto& item = data[mid];

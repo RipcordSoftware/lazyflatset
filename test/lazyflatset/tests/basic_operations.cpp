@@ -399,3 +399,13 @@ void basic_operations::test16() {
     
     CPPUNIT_ASSERT(set.cend() == iter);
 }
+
+void basic_operations::test17() {
+    rs::LazyFlatSet<unsigned> set;
+    for (unsigned i = 0; i < 10000; ++i) {
+        set.insert(i + 1000);
+    }
+    
+    CPPUNIT_ASSERT(set.find_fn([](unsigned v) { return -v; }) == nullptr);
+    CPPUNIT_ASSERT(set.find_fn([](unsigned v) { return 100000 - v; }) == nullptr);
+}
