@@ -5,7 +5,6 @@
 
 class basic_operations : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(basic_operations);
-
     CPPUNIT_TEST(test1);
     CPPUNIT_TEST(test2);
     CPPUNIT_TEST(test3);
@@ -23,7 +22,9 @@ class basic_operations : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test15);
     CPPUNIT_TEST(test16);
     CPPUNIT_TEST(test17);
-
+    CPPUNIT_TEST(test18);
+    CPPUNIT_TEST(test19);
+    CPPUNIT_TEST(test20);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -50,6 +51,9 @@ private:
     void test15();
     void test16();
     void test17();
+    void test18();
+    void test19();
+    void test20();
 };
 
 #endif	/* BASIC_OPERATIONS_H */

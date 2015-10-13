@@ -324,6 +324,19 @@ public:
         return count;
     }
     
+    void copy(std::vector<Value>& coll, bool sort = true) {
+        if (sort) {
+            flush();
+        }
+        
+        const auto newSize = coll.size() + coll_.size() + nursery_.size() + unsorted_.size();
+        coll.reserve(newSize);
+        
+        coll.insert(coll.end(), coll_.cbegin(), coll_.cend());
+        coll.insert(coll.end(), nursery_.cbegin(), nursery_.cend());
+        coll.insert(coll.end(), unsorted_.cbegin(), unsorted_.cend());        
+    }
+    
 private:
     const size_type search_end = -1;
     
@@ -399,7 +412,7 @@ private:
     void flushUnsorted() const {
         const auto unsortedSize = unsorted_.size();
         if (unsortedSize > 0) {
-            if ((nursery_.size() + unsortedSize) >= maxNurseryEntries_) {
+            if ((nursery_.size() + unsortedSize) > maxNurseryEntries_) {
                 flushNursery();
             }
 

@@ -409,3 +409,93 @@ void basic_operations::test17() {
     CPPUNIT_ASSERT(set.find_fn([](unsigned v) { return -v; }) == nullptr);
     CPPUNIT_ASSERT(set.find_fn([](unsigned v) { return 100000 - v; }) == nullptr);
 }
+
+void basic_operations::test18() {
+    rs::LazyFlatSet<unsigned> set(16);
+    set.insert(4);
+    set.insert(3);
+    set.insert(2);
+    set.insert(1);
+    set.insert(0);                   
+    
+    std::vector<unsigned> copy1;
+    set.copy(copy1, false);
+    CPPUNIT_ASSERT(copy1.size() == set.size());
+    CPPUNIT_ASSERT(copy1[0] == 4);
+    CPPUNIT_ASSERT(copy1[1] == 3);
+    CPPUNIT_ASSERT(copy1[2] == 2);
+    CPPUNIT_ASSERT(copy1[3] == 1);
+    CPPUNIT_ASSERT(copy1[4] == 0);
+    
+    std::vector<unsigned> copy2;
+    set.copy(copy2, true);
+    CPPUNIT_ASSERT(copy2.size() == set.size());
+    CPPUNIT_ASSERT(copy2[0] == 0);
+    CPPUNIT_ASSERT(copy2[1] == 1);
+    CPPUNIT_ASSERT(copy2[2] == 2);
+    CPPUNIT_ASSERT(copy2[3] == 3);
+    CPPUNIT_ASSERT(copy2[4] == 4);
+}
+
+void basic_operations::test19() {    
+    const auto unordered = 16;
+    const auto nursery = 64;
+    const auto count = 100;
+    
+    rs::LazyFlatSet<unsigned> set(unordered, nursery);
+    for (auto i = 0; i < count; ++i) {
+        set.insert(i);
+    }
+    
+    std::vector<unsigned> copy1;
+    set.copy(copy1, false);
+    CPPUNIT_ASSERT(copy1.size() == set.size());
+    for (auto i = 0; i < count; ++i) {
+        CPPUNIT_ASSERT(copy1[i] == i);
+    }
+        
+    std::vector<unsigned> copy2;
+    set.copy(copy2, true);
+    CPPUNIT_ASSERT(copy2.size() == set.size());
+    for (auto i = 0; i < count; ++i) {
+        CPPUNIT_ASSERT(copy2[i] == i);
+    }
+}
+
+void basic_operations::test20() {    
+    const auto unordered = 16;
+    const auto nursery = 64;
+    const auto count = 100;    
+    
+    rs::LazyFlatSet<unsigned> set(unordered, nursery);
+    for (auto i = 0; i < count; ++i) {
+        set.insert(count - i - 1);
+    }
+    
+    std::vector<unsigned> copy1;        
+    set.copy(copy1, false);
+    
+    // calculate the expected internal collection sizes so we can figure out
+    // where the data should appear in the copy buffer
+    auto unsortedSize = count % 16;
+    auto mainSize = ((count - unsortedSize) / nursery) * nursery;
+    auto nurserySize = count - mainSize - unsortedSize;
+    
+    CPPUNIT_ASSERT(copy1.size() == set.size());
+    for (auto i = 0; i < mainSize; ++i) {
+        CPPUNIT_ASSERT(copy1[i] == nurserySize + unsortedSize + i);
+    }
+    for (auto i = 0; i < nurserySize; ++i) {
+        CPPUNIT_ASSERT(copy1[mainSize + i] == unsortedSize + i);
+    }
+    for (auto i = 0; i < unsortedSize; ++i) {
+        CPPUNIT_ASSERT(copy1[mainSize + nurserySize + i] == unsortedSize - i - 1);
+    }
+        
+    std::vector<unsigned> copy2;
+    set.copy(copy2, true);
+    CPPUNIT_ASSERT(copy2.size() == set.size());
+    for (auto i = 0; i < count; ++i) {
+        CPPUNIT_ASSERT(copy2[i] == i);
+    }
+}
