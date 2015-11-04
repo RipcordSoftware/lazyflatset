@@ -202,7 +202,7 @@ public:
         return found;
     }
     
-    bool find(const value_type& k, value_type& v) {
+    bool find(const value_type& k, value_type& v) const {
         auto found = false;
         
         auto iter = lower_bound_equals(coll_, k);
@@ -226,7 +226,7 @@ public:
          return found;
     }
         
-    value_type_ptr find_fn(compare_type compare) {
+    value_type_ptr find_fn(compare_type compare) const {
         value_type_ptr value = nullptr;
         
         auto index = search(coll_, compare);
@@ -324,7 +324,7 @@ public:
         return count;
     }
     
-    void copy(std::vector<Value>& coll, bool sort = true) {
+    void copy(std::vector<Value>& coll, bool sort = true) const {
         if (sort) {
             flush();
         }
@@ -443,11 +443,11 @@ private:
         }
     }
     
-    value_type getValue(base_collection& coll, int index, std::true_type) {
+    value_type getValue(base_collection& coll, int index, std::true_type) const {
         return coll[index];
     }    
     
-    value_type_ptr getValue(base_collection& coll, int index, std::false_type) {
+    value_type_ptr getValue(base_collection& coll, int index, std::false_type) const {
         return &coll[index];
     }    
     
