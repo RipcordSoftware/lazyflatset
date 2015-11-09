@@ -437,8 +437,8 @@ private:
             } else if (less(source.back(), target.front())) {
                 target.insert(target.begin(), source.cbegin(), source.cend());
             } else {
-                target.insert(target.begin(), source.cbegin(), source.cend());
-                std::inplace_merge(target.begin(), target.begin() + source.size(), target.end(), less);
+                target.insert(target.end(), source.cbegin(), source.cend());
+                std::inplace_merge(target.begin(), target.end() - source.size(), target.end(), less);
             }
         }
     }
