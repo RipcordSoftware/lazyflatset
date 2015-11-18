@@ -59,31 +59,41 @@ public:
     using compare_type = typename std::function<int(const_reference)>;
     using erase_type = typename std::function<void(reference)>;
     
+    enum class insert_hint { no_hint = 0, new_item = 1 };
+    
     LazyFlatSet(unsigned maxUnsortedEntries = 16, unsigned maxNurseryEntries = 1024) : 
             maxUnsortedEntries_(maxUnsortedEntries), maxNurseryEntries_(maxNurseryEntries) {
         unsorted_.reserve(maxUnsortedEntries);
     }
     
-    void insert(const value_type& k) {
-        auto iter = lower_bound_equals(coll_, k);
-        if (iter != coll_.end()) {
-            *iter = k;
-        } else {
-            iter = lower_bound_equals(nursery_, k);
-            if (iter != nursery_.end()) {
+    void insert(const value_type& k, insert_hint hint = insert_hint::no_hint) {
+        if (hint == insert_hint::no_hint) {
+            auto iter = lower_bound_equals(coll_, k);
+            if (iter != coll_.end()) {
                 *iter = k;
-            } else {            
-                iter = search_unsorted(unsorted_, k);
-                if (iter != unsorted_.end()) {
+            } else {
+                iter = lower_bound_equals(nursery_, k);
+                if (iter != nursery_.end()) {
                     *iter = k;
                 } else {
-                    if (unsorted_.size() == maxUnsortedEntries_) {
-                        flushUnsorted();
-                    }
+                    iter = search_unsorted(unsorted_, k);
+                    if (iter != unsorted_.end()) {
+                        *iter = k;
+                    } else {
+                        if (unsorted_.size() == maxUnsortedEntries_) {
+                            flushUnsorted();
+                        }
 
-                    unsorted_.push_back(k);
+                        unsorted_.push_back(k);
+                    }
                 }
             }
+        } else {
+            if (unsorted_.size() == maxUnsortedEntries_) {
+                flushUnsorted();
+            }
+
+            unsorted_.push_back(k);
         }
     }
     

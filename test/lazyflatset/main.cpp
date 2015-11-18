@@ -72,6 +72,14 @@ void lazyFlatSetInsert(SourceIterator begin, SourceIterator end) {
     }
 }
 
+void lazyFlatSetInsertNewItem(SourceIterator begin, SourceIterator end) {
+    rs::LazyFlatSet<DataType> data(128, 32 * 1024);
+    
+    for (auto iter = begin; iter != end; ++iter) {
+        data.insert(*iter, rs::LazyFlatSet<DataType>::insert_hint::new_item);
+    }
+}
+
 void test(TestFunction func, SourceIterator begin, SourceIterator end, bool eol = false) {
     auto start = std::chrono::steady_clock::now();
     func(begin, end);
@@ -94,7 +102,7 @@ int main() {
         data.push_back(i);
     }
     
-    std::cout << R"("", "listTailInsert", "vectorTailInsert", "vectorTailPush", "vectorHeadInsert", "setInsert", "unorderedSetInsert", "priorityQueuePush", "lazyFlatSetInsert")" << std::endl;
+    std::cout << R"("", "listTailInsert", "vectorTailInsert", "vectorTailPush", "vectorHeadInsert", "setInsert", "unorderedSetInsert", "priorityQueuePush", "lazyFlatSetInsert", "lazyFlatSetInsert[new_item]")" << std::endl;
     
     std::cout << R"("Ascending", )";
     
@@ -106,7 +114,8 @@ int main() {
     test(setInsert, data.begin(), data.end());
     test(unorderedSetInsert, data.begin(), data.end());
     test(priorityQueuePush, data.begin(), data.end());
-    test(lazyFlatSetInsert, data.begin(), data.end(), true);
+    test(lazyFlatSetInsert, data.begin(), data.end());
+    test(lazyFlatSetInsertNewItem, data.begin(), data.end(), true);
     
     std::cout << R"("Descending", )";
     
@@ -120,7 +129,8 @@ int main() {
     test(setInsert, data.begin(), data.end());
     test(unorderedSetInsert, data.begin(), data.end());
     test(priorityQueuePush, data.begin(), data.end());
-    test(lazyFlatSetInsert, data.begin(), data.end(), true);
+    test(lazyFlatSetInsert, data.begin(), data.end());
+    test(lazyFlatSetInsertNewItem, data.begin(), data.end(), true);
     
     std::cout << R"("Partial shuffle", )";
     
@@ -141,7 +151,8 @@ int main() {
     test(setInsert, data.begin(), data.end());
     test(unorderedSetInsert, data.begin(), data.end());
     test(priorityQueuePush, data.begin(), data.end());
-    test(lazyFlatSetInsert, data.begin(), data.end(), true);
+    test(lazyFlatSetInsert, data.begin(), data.end());
+    test(lazyFlatSetInsertNewItem, data.begin(), data.end(), true);
     
     std::cout << R"("Full shuffle", )";
     
@@ -155,7 +166,8 @@ int main() {
     test(setInsert, data.begin(), data.end());
     test(unorderedSetInsert, data.begin(), data.end());
     test(priorityQueuePush, data.begin(), data.end());
-    test(lazyFlatSetInsert, data.begin(), data.end(), true);
+    test(lazyFlatSetInsert, data.begin(), data.end());
+    test(lazyFlatSetInsertNewItem, data.begin(), data.end(), true);
     
     return 0;
 }
