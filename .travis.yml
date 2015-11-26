@@ -17,4 +17,10 @@ addons:
     - ruby
     - rubygems
 
+before_script:
+  - curl http://ftp.uk.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz -O
+  - tar xfz lcov_1.11.orig.tar.gz
+  - mkdir -p lcov && make -C lcov-1.11/ install PREFIX=~/lcov
+  - gem install --user-install coveralls-lcov
+
 script: make all CXX=g++-4.9 && make test CXX=g++-4.9
