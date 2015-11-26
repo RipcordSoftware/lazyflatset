@@ -22,6 +22,6 @@ before_script:
   - tar xfz lcov_1.11.orig.tar.gz
   - mkdir -p lcov && make -C lcov-1.11/ install PREFIX=~/lcov
   - export PATH=~/lcov/usr/bin:$PATH
-  - gem install --user-install coveralls-lcov
+  - gem install coveralls-lcov
 
 script: make all CXX=g++-4.9 && make test CXX=g++-4.9 && ./coverage.sh gcov-4.9
