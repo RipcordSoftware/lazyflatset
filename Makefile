@@ -1,14 +1,5 @@
-build: force_true
-	cd test/lazyflatset && $(MAKE) $(MFLAGS) $(MAKEOVERRIDES) build
+.PHONY: build all clean test
 
-all: force_true
-	cd test/lazyflatset && $(MAKE) $(MFLAGS) $(MAKEOVERRIDES) all
+build all clean test:
+	cd test/lazyflatset && $(MAKE) $@
 
-clean: force_true
-	cd test/lazyflatset && $(MAKE) $(MFLAGS) $(MAKEOVERRIDES) clean
-
-test: force_true
-	cd test/lazyflatset && $(MAKE) $(MFLAGS) $(MAKEOVERRIDES) test
-
-force_true:
-	true
