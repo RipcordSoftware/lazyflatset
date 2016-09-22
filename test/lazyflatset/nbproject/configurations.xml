@@ -63,7 +63,7 @@
       <compileType>
         <ccTool>
           <standard>8</standard>
-          <commandLine>--coverage</commandLine>
+          <commandLine>$(COVERAGE_FLAGS)</commandLine>
         </ccTool>
       </compileType>
       <item path="../../externals/cpp-TimSort/timsort.hpp"

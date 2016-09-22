@@ -50,8 +50,8 @@ TESTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=--coverage
-CXXFLAGS=--coverage
+CCFLAGS=$(COVERAGE_FLAGS)
+CXXFLAGS=$(COVERAGE_FLAGS)
 
 # Fortran Compiler Flags
 FFLAGS=
