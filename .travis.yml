@@ -10,10 +10,10 @@ matrix:
       sudo: false
       compiler: clang
       env: _CC=clang-3.5 _CXX=clang++-3.5 _COV=gcov-4.9
-#    - os: osx
-#      compiler: clang
-#      osx_image: xcode6.4
-#      env: _CC=clang _CXX=clang++
+    - os: osx
+      compiler: clang
+      osx_image: xcode6.4
+      env: _CC=clang _CXX=clang++
 
 addons:
   apt:
